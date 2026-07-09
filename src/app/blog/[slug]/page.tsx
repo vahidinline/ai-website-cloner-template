@@ -9,6 +9,8 @@ import {
 } from '@/sanity/queries';
 import { hasValidSanityConfig } from '@/sanity/env';
 
+export const dynamicParams = false;
+
 type BlogPost = {
   title?: string;
   excerpt?: string;

@@ -7,8 +7,6 @@ import { hasValidSanityConfig } from '@/sanity/env';
 import { imageFields, sanityClient } from '@/sanity/queries';
 import type { SanityPage } from '@/sanity/types';
 
-export const revalidate = 0;
-
 const homePageQuery = groq`*[_type == "page" && slug.current == "home"][0]{
   title,
   seo{

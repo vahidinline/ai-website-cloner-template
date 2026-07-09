@@ -11,6 +11,8 @@ import {
 } from '@/sanity/queries';
 import type { SanityImage, SanitySeo } from '@/sanity/types';
 
+export const dynamicParams = false;
+
 type Video = {
   title?: string;
   slug?: { current?: string };
