@@ -131,7 +131,8 @@ function SectionShell({
   spacingClassName?: string;
 }) {
   const backgroundImage = section.settings?.backgroundImage as
-    ImageValue | undefined;
+    | ImageValue
+    | undefined;
   const customBackground =
     typeof section.settings?.backgroundColor === 'string'
       ? section.settings.backgroundColor
@@ -213,6 +214,14 @@ function DynamicHeroSection({ section }: { section: DynamicSection }) {
       ? section.height.trim()
       : undefined;
 
+  console.log('[homepage-debug] DynamicHeroSection props:', {
+    _key: section._key,
+    _type: section._type,
+    title: section.title,
+    richText: section.richText,
+    content: section.content,
+  });
+
   return (
     <SectionShell
       section={section}
@@ -254,6 +263,21 @@ function DynamicHeroSection({ section }: { section: DynamicSection }) {
 function GenericRichTextSection({ section }: { section: SanitySection }) {
   const dynamicSection = section as DynamicSection;
   const image = dynamicSection.image;
+  const portableTextValue = section.richText || section.content;
+
+  console.log('[homepage-debug] GenericRichTextSection props:', {
+    _key: section._key,
+    _type: section._type,
+    title: section.title,
+    richText: section.richText,
+    content: section.content,
+    portableTextValue,
+    nullPortableTextItems: Array.isArray(portableTextValue)
+      ? portableTextValue
+          .map((item, index) => ({ index, item }))
+          .filter(({ item }) => item == null)
+      : undefined,
+  });
 
   return (
     <section className="bg-[#fbf9f9] px-[18px] py-16 md:py-[115px]">
@@ -305,6 +329,17 @@ function DynamicCardsSection({
   section: DynamicSection;
   dark?: boolean;
 }) {
+  console.log('[homepage-debug] DynamicCardsSection props:', {
+    _key: section._key,
+    _type: section._type,
+    title: section.title,
+    cards: section.cards,
+    posts: section.posts,
+    episodes: section.episodes,
+    videos: section.videos,
+    books: section.books,
+  });
+
   const items =
     asArray(section.cards).length > 0
       ? asArray(section.cards)
@@ -373,6 +408,13 @@ function DynamicCardsSection({
 }
 
 function DynamicLogoCloudSection({ section }: { section: DynamicSection }) {
+  console.log('[homepage-debug] DynamicLogoCloudSection props:', {
+    _key: section._key,
+    _type: section._type,
+    title: section.title,
+    logos: section.logos,
+  });
+
   return (
     <SectionShell section={section} dark={section.settings?.theme === 'dark'}>
       <SectionTitle
@@ -405,9 +447,21 @@ export function SectionRenderer({
   sections,
   fallbackToStaticCloneSections = false,
 }: SectionRendererProps) {
+  console.log('[homepage-debug] SectionRenderer received props:', {
+    fallbackToStaticCloneSections,
+    sections,
+  });
+
   if (!sections?.length) return null;
 
   return sections.map((section, index) => {
+    console.log('[homepage-debug] SectionRenderer mapping section:', {
+      index,
+      _key: section?._key,
+      _type: section?._type,
+      section,
+    });
+
     if (section.settings?.isHidden) return null;
     const dynamicSection = section as DynamicSection;
     const key = section._key || `${section._type}-${index}`;

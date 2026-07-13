@@ -38,7 +38,26 @@ const homePageQuery = groq`*[_type == "page" && slug.current == "home"][0]{
 async function getHomePageData() {
   if (!hasValidSanityConfig) return null;
 
-  return (await sanityClient.fetch(homePageQuery)) as SanityPage | null;
+  const homePage = (await sanityClient.fetch(
+    homePageQuery,
+  )) as SanityPage | null;
+
+  console.log('[homepage-debug] raw Sanity homePage fetch result:');
+  console.dir(homePage, { depth: null });
+  console.log(
+    '[homepage-debug] fetched sections summary:',
+    homePage?.sections?.map((section, index) => ({
+      index,
+      _key: section?._key,
+      _type: section?._type,
+      hasRichText: Boolean(section?.richText),
+      richTextLength: section?.richText?.length,
+      hasContent: Boolean(section?.content),
+      contentLength: section?.content?.length,
+    })),
+  );
+
+  return homePage;
 }
 
 function MissingSectionFallback({
@@ -60,6 +79,15 @@ function renderHomeSection(
   section: NonNullable<SanityPage['sections']>[number],
   index: number,
 ) {
+  console.log('[homepage-debug] renderHomeSection input:', {
+    index,
+    _key: section?._key,
+    _type: section?._type,
+    isHidden: section?.settings?.isHidden,
+    richText: section?.richText,
+    content: section?.content,
+  });
+
   if (!section?._type || section.settings?.isHidden) return null;
 
   const key = section._key || `${section._type}-${index}`;
@@ -127,12 +155,16 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function Home() {
   const homePage = await getHomePageData();
+  const sections = homePage?.sections;
+
+  console.log('[homepage-debug] sections array immediately before map:');
+  console.dir(sections, { depth: null });
 
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
       <main className="flex-1">
-        {homePage?.sections?.map(renderHomeSection) || (
+        {sections?.map(renderHomeSection) || (
           <MissingSectionFallback index={0} sectionType="home page sections" />
         )}
       </main>

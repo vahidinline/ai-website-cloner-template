@@ -169,6 +169,27 @@ const components: PortableTextComponents = {
 };
 
 export function PortableTextRenderer({ value }: PortableTextRendererProps) {
+  console.log('[homepage-debug] PortableTextRenderer value:', value);
+
+  if (Array.isArray(value)) {
+    console.log(
+      '[homepage-debug] PortableTextRenderer malformed/null blocks:',
+      value
+        .map((block, index) => ({ index, block }))
+        .filter(({ block }) => {
+          if (block == null) return true;
+          if (typeof block !== 'object') return true;
+
+          const blockRecord = block as Record<string, unknown>;
+          if (blockRecord._type === 'block' && blockRecord.children == null) {
+            return true;
+          }
+
+          return false;
+        }),
+    );
+  }
+
   if (!value?.length) return null;
   return <PortableText value={value} components={components} />;
 }
