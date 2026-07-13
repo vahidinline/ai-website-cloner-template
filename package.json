@@ -25,11 +25,16 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "sanity:seed": "node scripts/seed-sanity.mjs",
-    "check": "npm run lint && npm run typecheck && npm run build"
+    "sanity:fix-keys": "node scripts/fix-sanity-array-keys.mjs",
+    "sanity:fix-keys:dry-run": "node scripts/fix-sanity-array-keys.mjs --dry-run",
+    "sanity:fix-refs": "node scripts/fix-sanity-dangling-references.mjs",
+    "sanity:fix-refs:dry-run": "node scripts/fix-sanity-dangling-references.mjs --dry-run",
+    "check": "pnpm lint && pnpm typecheck && pnpm build"
   },
   "dependencies": {
     "@base-ui/react": "^1.3.0",
     "@portabletext/react": "^6.2.0",
+    "@sanity/client": "^7.23.0",
     "@sanity/image-url": "^2.1.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

@@ -53,6 +53,7 @@ type ReferencedItem = {
 
 type DynamicSection = SanitySection & {
   variant?: string;
+  height?: string;
   image?: ImageValue;
   backgroundImage?: ImageValue;
   foregroundImage?: ImageValue;
@@ -122,10 +123,12 @@ function SectionShell({
   section,
   children,
   dark = false,
+  spacingClassName = 'px-[18px] py-16 md:py-[115px]',
 }: {
   section: DynamicSection;
   children: React.ReactNode;
   dark?: boolean;
+  spacingClassName?: string;
 }) {
   const backgroundImage = section.settings?.backgroundImage as
     ImageValue | undefined;
@@ -141,7 +144,7 @@ function SectionShell({
           ? section.settings.sectionId
           : undefined
       }
-      className={`relative overflow-hidden px-[18px] py-16 md:py-[115px] ${
+      className={`relative overflow-hidden ${spacingClassName} ${
         dark ? 'bg-[#001523] text-white' : 'bg-[#fbf9f9] text-[#001523]'
       }`}
       style={{ backgroundColor: customBackground }}>
@@ -163,12 +166,14 @@ function SectionShell({
 function SectionTitle({
   section,
   dark = false,
+  className = 'mb-10 md:mb-14',
 }: {
   section: DynamicSection;
   dark?: boolean;
+  className?: string;
 }) {
   return (
-    <div className="mb-10 md:mb-14">
+    <div className={className}>
       {section.eyebrow ? (
         <p
           className={`text-[15px] font-bold uppercase tracking-[0.18em] ${dark ? 'text-[#87ceff]' : 'text-[#2c80b8]'}`}>
@@ -203,25 +208,33 @@ function ButtonLink({ button }: { button?: LinkValue }) {
 
 function DynamicHeroSection({ section }: { section: DynamicSection }) {
   const image = section.foregroundImage || section.image;
+  const heroMinHeight =
+    typeof section.height === 'string' && section.height.trim().length > 0
+      ? section.height.trim()
+      : undefined;
 
   return (
     <SectionShell
       section={section}
+      spacingClassName="px-[18px] py-8 md:py-10"
       dark={
         section.variant === 'backgroundImage' ||
         section.settings?.theme === 'dark'
       }>
-      <div className="grid min-h-[520px] gap-10 md:grid-cols-2 md:items-center">
+      <div
+        className="grid min-h-[300px] gap-7 md:min-h-[300px] md:grid-cols-2 md:items-center"
+        style={heroMinHeight ? { minHeight: heroMinHeight } : undefined}>
         <div>
           <SectionTitle
             section={section}
+            className="mb-6 md:mb-8"
             dark={
               section.variant === 'backgroundImage' ||
               section.settings?.theme === 'dark'
             }
           />
           <PortableTextRenderer value={section.richText || section.content} />
-          <div className="mt-8 flex flex-wrap gap-3">
+          <div className="mt-5 flex flex-wrap gap-3">
             <ButtonLink button={section.primaryButton} />
             <ButtonLink button={section.secondaryButton} />
           </div>
@@ -230,7 +243,7 @@ function DynamicHeroSection({ section }: { section: DynamicSection }) {
           <img
             src={image.url}
             alt={image.alt || ''}
-            className="mx-auto max-h-[560px] w-full rounded-[34px] object-cover"
+            className="mx-auto max-h-[6000px] w-full rounded-[34px] object-cover"
           />
         ) : null}
       </div>

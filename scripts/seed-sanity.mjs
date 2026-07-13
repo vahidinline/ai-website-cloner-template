@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { createReadStream, existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -32,7 +33,7 @@ const apiVersion = process.env.NEXT_PUBLIC_SANITY_API_VERSION || '2026-06-29';
 const token =
   process.env.SANITY_API_WRITE_TOKEN || process.env.SANITY_AUTH_TOKEN;
 
-if (!projectId || projectId === 'yourprojectid') {
+if (!projectId || projectId === 'u09gju27') {
   console.error('Missing NEXT_PUBLIC_SANITY_PROJECT_ID in .env.local');
   process.exit(1);
 }
@@ -65,13 +66,24 @@ function slugify(value) {
     .replace(/(^-|-$)/g, '');
 }
 
-function block(text, style = 'normal') {
+function makeKey(...parts) {
+  const value = parts.filter(Boolean).join('-');
+  const slug = slugify(value).slice(0, 72);
+  const hash = createHash('sha1').update(value).digest('hex').slice(0, 10);
+  return slug ? `${slug}-${hash}` : `key-${hash}`;
+}
+
+function block(text, style = 'normal', keySeed = text) {
+  const key = makeKey('block', style, keySeed);
+
   return {
+    _key: key,
     _type: 'block',
     style,
     markDefs: [],
     children: [
       {
+        _key: makeKey('span', keySeed),
         _type: 'span',
         text,
         marks: [],
@@ -81,7 +93,9 @@ function block(text, style = 'normal') {
 }
 
 function richText(...paragraphs) {
-  return paragraphs.filter(Boolean).map((text) => block(text));
+  return paragraphs
+    .filter(Boolean)
+    .map((text, index) => block(text, 'normal', `${index}-${text}`));
 }
 
 async function uploadImage(relativePath, alt) {
