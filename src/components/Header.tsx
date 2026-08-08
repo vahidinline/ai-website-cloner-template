@@ -1,8 +1,30 @@
 import React from 'react';
 import Link from 'next/link';
 import { SearchIcon } from './icons';
+import { getSiteSettings } from '@/sanity/queries';
+import { hasValidSanityConfig } from '@/sanity/env';
+import type { SanityButton, SanitySiteSettings } from '@/sanity/types';
 
-export function Header() {
+function hrefFor(button: SanityButton) {
+  if (button.url) return button.url;
+  const slug = button.internalLink?.slug?.current;
+  if (!slug) return undefined;
+  switch (button.internalLink?._type) {
+    case 'post': return `/blog/${slug}`;
+    case 'podcastEpisode': return `/podcast/${slug}`;
+    case 'video': return `/videos/${slug}`;
+    case 'book': return `/books/${slug}`;
+    default: return `/${slug}`;
+  }
+}
+
+export async function Header() {
+  const settings = hasValidSanityConfig
+    ? ((await getSiteSettings()) as SanitySiteSettings | null)
+    : null;
+  const navigation = settings?.mainNavigation ?? [];
+  const logo = settings?.logoLight;
+
   return (
     <header className="absolute top-0 left-0 w-full z-[999]">
       <div
@@ -16,8 +38,8 @@ export function Header() {
           <div className="w-[150px] h-[32px]">
             <Link href="/">
               <img
-                src="/images/logo.png"
-                alt="The Blog of Author Saeed Souzangar"
+                src={logo?.url || '/images/logo.png'}
+                alt={logo?.alt || settings?.siteTitle || 'Site logo'}
                 className="w-full h-full object-contain"
               />
             </Link>
@@ -25,34 +47,15 @@ export function Header() {
 
           {/* Navigation */}
           <nav className="hidden md:flex items-center gap-[21.6px] text-white text-[18px] font-medium">
-            <Link
-              href="/about"
-              className="hover:text-gray-200 transition-colors">
-              About
-            </Link>
-            <Link
-              href="/blog"
-              className="hover:text-gray-200 transition-colors">
-              Blog
-            </Link>
-            <Link
-              href="/books"
-              className="hover:text-gray-200 transition-colors">
-              Books
-            </Link>
-            <Link
-              href="/podcast"
-              className="hover:text-gray-200 transition-colors">
-              Podcast
-            </Link>
-            <Link href="/tv" className="hover:text-gray-200 transition-colors">
-              TV
-            </Link>
-            <Link
-              href="/newsletter"
-              className="hover:text-gray-200 transition-colors">
-              Newsletter
-            </Link>
+            {navigation.map((item, index) => {
+              const href = hrefFor(item);
+              if (!item.label || !href) return null;
+              return href.startsWith('http') ? (
+                <a key={`${item.label}-${index}`} href={href} target={item.openInNewTab ? '_blank' : undefined} rel={item.openInNewTab ? 'noreferrer' : undefined} className="transition-colors hover:text-gray-200">{item.label}</a>
+              ) : (
+                <Link key={`${item.label}-${index}`} href={href} className="transition-colors hover:text-gray-200">{item.label}</Link>
+              );
+            })}
           </nav>
 
           {/* Actions */}
@@ -63,9 +66,9 @@ export function Header() {
               <SearchIcon className="w-[14px] h-[14px]" />
             </button>
             <Link
-              href="/newsletter"
+              href={hrefFor(navigation.find((item) => item.label?.toLowerCase().includes('newsletter')) || {}) || '/newsletter'}
               className="hidden md:flex items-center justify-center bg-[#001523] text-white rounded-full px-6 py-3 text-[13px] font-bold hover:bg-[#002a45] transition-colors">
-              FREE NEWSLETTER
+              {navigation.find((item) => item.label?.toLowerCase().includes('newsletter'))?.label || 'FREE NEWSLETTER'}
             </Link>
           </div>
         </div>

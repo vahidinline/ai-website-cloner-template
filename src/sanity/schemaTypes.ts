@@ -414,6 +414,45 @@ const buyLink = defineType({
   ],
 });
 
+const footerColumn = defineType({
+  name: 'footerColumn',
+  title: 'Footer column',
+  type: 'object',
+  fields: [
+    defineField({ name: 'title', title: 'Column title', type: 'string' }),
+    defineField({
+      name: 'links',
+      title: 'Links',
+      type: 'array',
+      of: [defineArrayMember({ type: 'button' })],
+    }),
+  ],
+});
+
+const footerSettings = defineType({
+  name: 'footerSettings',
+  title: 'Footer settings',
+  type: 'object',
+  fields: [
+    defineField({ name: 'enabled', title: 'Show footer', type: 'boolean', initialValue: true }),
+    defineField({ name: 'logo', title: 'Logo', type: 'imageWithAlt' }),
+    defineField({ name: 'copyright', title: 'Copyright', type: 'string' }),
+    defineField({
+      name: 'columns',
+      title: 'Navigation columns',
+      type: 'array',
+      of: [defineArrayMember({ type: 'footerColumn' })],
+    }),
+    defineField({
+      name: 'socialLinks',
+      title: 'Social links',
+      type: 'array',
+      of: [defineArrayMember({ type: 'button' })],
+    }),
+    defineField({ name: 'affiliateDisclosure', title: 'Affiliate disclosure', type: 'text', rows: 3 }),
+  ],
+});
+
 function sectionBaseFields() {
   return [
     defineField({ name: 'eyebrow', title: 'Eyebrow', type: 'string' }),
@@ -1124,6 +1163,7 @@ const siteSettings = defineType({
   type: 'document',
   fields: [
     defineField({ name: 'siteTitle', title: 'Site title', type: 'string' }),
+    defineField({ name: 'footer', title: 'Footer', type: 'footerSettings' }),
     defineField({
       name: 'logoLight',
       title: 'Logo light',
@@ -1148,6 +1188,18 @@ const siteSettings = defineType({
       type: 'array',
       of: [defineArrayMember({ type: 'button' })],
     }),
+    defineField({
+      name: 'footerCopyright',
+      title: 'Footer copyright',
+      type: 'string',
+      initialValue: 'Copyright © 2007–2026 Saeed Souzangar. All rights reserved.',
+    }),
+    defineField({
+      name: 'affiliateDisclosure',
+      title: 'Affiliate disclosure',
+      type: 'text',
+      rows: 3,
+    }),
     defineField({ name: 'footerCta', title: 'Footer CTA', type: 'ctaSection' }),
     defineField({ name: 'defaultSeo', title: 'Default SEO', type: 'seo' }),
   ],
@@ -1167,6 +1219,8 @@ export const schemaTypes = [
   cardItem,
   faqItem,
   buyLink,
+  footerColumn,
+  footerSettings,
   heroSection,
   richTextSection,
   newsletterSection,

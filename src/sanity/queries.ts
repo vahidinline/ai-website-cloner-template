@@ -145,7 +145,31 @@ export const siteSettingsQuery = groq`*[_type == "siteSettings"][0]{
   ...,
   logoLight ${imageFields},
   logoDark ${imageFields},
-  defaultSeo
+  defaultSeo,
+  footerCopyright,
+  affiliateDisclosure,
+  footer{
+    ...,
+    logo ${imageFields},
+    columns[]{
+      ...,
+      links[]{..., internalLink->{_type, slug}}
+    },
+    socialLinks[]{..., internalLink->{_type, slug}}
+  },
+  footerCta{
+    ...,
+    image ${imageFields},
+    buttons[]{..., internalLink->{_type, slug}}
+  },
+  footerNavigation[]{
+    ...,
+    internalLink->{_type, slug}
+  },
+  socialLinks[]{
+    ...,
+    internalLink->{_type, slug}
+  }
 }`;
 
 export async function getPageBySlug(slug: string) {

@@ -13,8 +13,30 @@ export type SanityImage = {
 export type SanityButton = {
   label?: string;
   url?: string;
+  internalLink?: { _type?: string; _ref?: string; slug?: SanitySlug };
   variant?: 'primary' | 'secondary' | 'ghost' | 'link';
   openInNewTab?: boolean;
+};
+
+export type SanitySiteSettings = {
+  siteTitle?: string;
+  logoLight?: SanityImage;
+  logoDark?: SanityImage;
+  mainNavigation?: SanityButton[];
+  footerNavigation?: SanityButton[];
+  socialLinks?: SanityButton[];
+  footerCopyright?: string;
+  affiliateDisclosure?: string;
+  defaultSeo?: SanitySeo;
+  footer?: {
+    enabled?: boolean;
+    logo?: SanityImage;
+    copyright?: string;
+    columns?: Array<{ title?: string; links?: SanityButton[] }>;
+    socialLinks?: SanityButton[];
+    affiliateDisclosure?: string;
+  };
+  footerCta?: SanitySection & { buttons?: SanityButton[] };
 };
 
 export type SanitySeo = {
