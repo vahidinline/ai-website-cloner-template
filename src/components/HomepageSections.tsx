@@ -512,7 +512,7 @@ export function BooksSection() {
           {books.map((book) => (
             <article
               key={book.title}
-              className="flex flex-col items-center rounded-[30px] bg-[#f6f1f1] p-6 text-center transition-transform hover:-translate-y-1">
+              className="flex flex-col items-center rounded-[30px] bg-[#f6f1f1] p-6 text-center transition-shadow duration-200 hover:shadow-md">
               <div className="flex h-[260px] items-end justify-center">
                 <img
                   src={book.image}

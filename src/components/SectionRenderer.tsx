@@ -225,7 +225,7 @@ function DynamicHeroSection({ section }: { section: DynamicSection }) {
   return (
     <SectionShell
       section={section}
-      spacingClassName="px-[18px] py-8 md:py-10"
+      spacingClassName="px-[18px] pt-[190px] pb-0 md:pt-10 md:pb-0"
       dark={
         section.variant === 'backgroundImage' ||
         section.settings?.theme === 'dark'
@@ -252,7 +252,7 @@ function DynamicHeroSection({ section }: { section: DynamicSection }) {
           <img
             src={image.url}
             alt={image.alt || ''}
-            className="mx-auto max-h-[6000px] w-full rounded-[34px] object-cover"
+            className="mx-auto max-h-[6000px] w-full self-end rounded-t-[34px] object-cover"
           />
         ) : null}
       </div>
