@@ -35,6 +35,59 @@ const homePageQuery = groq`*[_type == "page" && slug.current == "home"][0]{
   }
 }`;
 
+const profileSchema = {
+  "@context": "https://schema.org",
+  "@type": "ProfilePage",
+  "@id": "https://souzangar.com/#profile",
+  "url": "https://souzangar.com/",
+  "name": "Saeed Souzangar | سعید سوزنگر",
+  "inLanguage": ["fa-IR", "en"],
+  "mainEntity": {
+    "@type": "Person",
+    "@id": "https://souzangar.com/#person",
+    "name": "Saeed Souzangar",
+    "alternateName": [
+      "سعید سوزنگر",
+      "Saeed Soozangar",
+      "@souzangar"
+    ],
+    "url": "https://souzangar.com/",
+    "mainEntityOfPage": {
+      "@id": "https://souzangar.com/#profile"
+    },
+    "image": {
+      "@type": "ImageObject",
+      "url": "https://media.licdn.com/dms/image/v2/D4E03AQHg26Uj987T0A/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1720349394965?e=2147483647&v=beta&t=uh1OmFeE2kEhuoQ9QvQbPMvLBEMP7CDhLkVXD6mTweQ",
+      "caption": "Saeed Souzangar"
+    },
+    "jobTitle": [
+      "Entrepreneur",
+      "Cybersecurity Specialist",
+      "Network and Security Instructor",
+      "Digital Rights Advocate"
+    ],
+    "description": "Saeed Souzangar is an Iranian cybersecurity educator, network and security instructor, technology entrepreneur, podcaster, and digital rights advocate. He has worked in technology education and cybersecurity since 2005.",
+    "knowsAbout": [
+      "Entrepreneur",
+      "Cybersecurity",
+      "Network Security",
+      "Internet Infrastructure",
+      "Digital Privacy",
+      "Digital Rights",
+      "Child Online Safety",
+      "Podcaster",
+      "Youtuber"
+    ],
+    "sameAs": [
+      "https://www.instagram.com/souzangar/",
+      "https://x.com/souzangar",
+      "https://www.linkedin.com/in/souzangar/",
+      "https://www.youtube.com/@souzangar",
+      "https://t.me/souzangar"
+    ]
+  }
+};
+
 async function getHomePageData() {
   if (!hasValidSanityConfig) return null;
 
@@ -162,6 +215,10 @@ export default async function Home() {
 
   return (
     <div className="flex flex-col min-h-screen">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(profileSchema) }}
+      />
       <Header />
       <main className="flex-1">
         {sections?.map(renderHomeSection) || (
