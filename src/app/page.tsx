@@ -46,44 +46,25 @@ const profileSchema = {
     "@type": "Person",
     "@id": "https://souzangar.com/#person",
     "name": "Saeed Souzangar",
-    "alternateName": [
-      "سعید سوزنگر",
-      "Saeed Soozangar",
-      "@souzangar"
-    ],
+    "alternateName": ["سعید سوزنگر", "Saeed Souzangar", "@souzangar"],
     "url": "https://souzangar.com/",
-    "mainEntityOfPage": {
-      "@id": "https://souzangar.com/#profile"
-    },
+    "mainEntityOfPage": {"@id": "https://souzangar.com/#profile"},
     "image": {
       "@type": "ImageObject",
       "url": "https://media.licdn.com/dms/image/v2/D4E03AQHg26Uj987T0A/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1720349394965?e=2147483647&v=beta&t=uh1OmFeE2kEhuoQ9QvQbPMvLBEMP7CDhLkVXD6mTweQ",
       "caption": "Saeed Souzangar"
     },
-    "jobTitle": [
-      "Entrepreneur",
-      "Cybersecurity Specialist",
-      "Network and Security Instructor",
-      "Digital Rights Advocate"
-    ],
-    "description": "Saeed Souzangar is an Iranian cybersecurity educator, network and security instructor, technology entrepreneur, podcaster, and digital rights advocate. He has worked in technology education and cybersecurity since 2005.",
-    "knowsAbout": [
-      "Entrepreneur",
-      "Cybersecurity",
-      "Network Security",
-      "Internet Infrastructure",
-      "Digital Privacy",
-      "Digital Rights",
-      "Child Online Safety",
-      "Podcaster",
-      "Youtuber"
-    ],
+    "jobTitle": ["Entrepreneur", "Cybersecurity Expert", "Network & Security Instructor", "Digital Rights Advocate"],
+    "description": "Saeed Souzangar is an Iranian cybersecurity expert, network engineer, educator, technology entrepreneur, and digital rights advocate focused on internet infrastructure, security, and digital privacy.",
+    "knowsAbout": ["Entrepreneurship", "Cybersecurity", "Network Security", "Internet Infrastructure", "Digital Privacy", "Digital Rights", "Child Online Safety", "Information Technology"],
     "sameAs": [
-      "https://www.instagram.com/souzangar/",
-      "https://x.com/souzangar",
-      "https://www.linkedin.com/in/souzangar/",
-      "https://www.youtube.com/@souzangar",
-      "https://t.me/souzangar"
+      "https://www.instagram.com/souzangar/", "https://x.com/souzangar", "https://www.linkedin.com/in/souzangar/", "https://www.youtube.com/@souzangar", "https://t.me/souzangar",
+      "https://www.context.news/surveillance/irans-digital-wall-casts-chill-over-protests-the-economy", "https://english.aawsat.com/features/4545691-iran-steps-internet-crackdown-one-year-after-mahsa-amini-death", "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D9%81%D9%86%D8%A7%D9%88%D8%B1%DB%8C-298/1090265-%D8%A2%D8%B2%D8%A7%D8%AF%DB%8C-%D8%B3%D8%B9%DB%8C%D8%AF-%D8%B3%D9%88%D8%B2%D9%86%DA%AF%D8%B1-%D8%A8%D8%A7-%D9%82%D8%B1%D8%A7%D8%B1-%D9%88%D8%AB%DB%8C%D9%82%D9%87-%D9%BE%D8%B3-%D8%A7%D8%B2-%DB%8C%DA%A9-%D9%85%D8%A7%D9%87-%D8%A8%D8%A7%D8%B2%D8%AF%D8%A7%D8%B4%D8%AA", "https://www.zoomit.ir/iran-news/456104-detention-of-network-security-experts-soozangar-seirafi-1404/", "https://digiato.com/iran-technology-news/saeid-souzangar-iman-sirafi-arrest"
+    ],
+    "subjectOf": [
+      {"@type": "NewsArticle", "headline": "'The internet is dead in Iran': Protests targeted by shutdown", "url": "https://www.context.news/surveillance/irans-digital-wall-casts-chill-over-protests-the-economy", "publisher": {"@type": "NewsMediaOrganization", "name": "Context / Thomson Reuters Foundation"}},
+      {"@type": "NewsArticle", "headline": "Iran Steps up Internet Crackdown One Year After Mahsa Amini Death", "url": "https://english.aawsat.com/features/4545691-iran-steps-internet-crackdown-one-year-after-mahsa-amini-death", "publisher": {"@type": "NewsMediaOrganization", "name": "Asharq Al-Awsat"}},
+      {"@type": "NewsArticle", "headline": "آزادی سعید سوزنگر با قرار وثیقه پس از یک ماه بازداشت", "url": "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D9%81%D9%86%D8%A7%D9%88%D8%B1%DB%8C-298/1090265-%D8%A2%D8%B2%D8%A7%D8%AF%DB%8C-%D8%B3%D8%B9%DB%8C%D8%AF-%D8%B3%D9%88%D8%B2%D9%86%DA%AF%D8%B1-%D8%A8%D8%A7-%D9%82%D8%B1%D8%A7%D8%B1-%D9%88%D8%AB%DB%8C%D9%82%D9%87-%D9%BE%D8%B3-%D8%A7%D8%B2-%DB%8C%DA%A9-%D9%85%D8%A7%D9%87-%D8%A8%D8%A7%D8%B2%D8%AF%D8%A7%D8%B4%D8%AA", "publisher": {"@type": "NewsMediaOrganization", "name": "Shargh Daily"}}
     ]
   }
 };
