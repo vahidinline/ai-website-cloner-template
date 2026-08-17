@@ -17,22 +17,34 @@ export async function generateMetadata(): Promise<Metadata> {
     : null;
   const seo = settings?.defaultSeo;
   return {
-    title: seo?.metaTitle || settings?.siteTitle || 'The Blog of Author Saeed Souzangar',
+    title:
+      seo?.metaTitle ||
+      settings?.siteTitle ||
+      'Saeed Souzangar - Official Website',
     description: seo?.metaDescription,
     alternates: seo?.canonicalUrl ? { canonical: seo.canonicalUrl } : undefined,
     robots: seo?.noIndex ? { index: false, follow: false } : undefined,
     openGraph: {
       title: seo?.metaTitle || settings?.siteTitle,
       description: seo?.metaDescription,
-      images: seo?.ogImage?.url ? [{ url: seo.ogImage.url, width: seo.ogImage.width, height: seo.ogImage.height, alt: seo.ogImage.alt }] : undefined,
+      images: seo?.ogImage?.url
+        ? [
+            {
+              url: seo.ogImage.url,
+              width: seo.ogImage.width,
+              height: seo.ogImage.height,
+              alt: seo.ogImage.alt,
+            },
+          ]
+        : undefined,
     },
     icons: {
-    icon: [
-      { url: '/seo/favicon-0.png', sizes: '32x32' },
-      { url: '/seo/favicon-1.png', sizes: '192x192' },
-    ],
-    apple: '/seo/favicon-2.png',
-  },
+      icon: [
+        { url: '/seo/favicon-0.png', sizes: '32x32' },
+        { url: '/seo/favicon-1.png', sizes: '192x192' },
+      ],
+      apple: '/seo/favicon-2.png',
+    },
   };
 }
 
