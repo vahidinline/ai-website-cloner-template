@@ -413,13 +413,14 @@ async function main() {
   await createOrReplace({
     _id: 'siteSettings',
     _type: 'siteSettings',
-    siteTitle: 'The Blog of Author Tim Ferriss',
+    siteTitle: 'The Blog of Author Saeed Souzangars',
     logoLight: await uploadImage('/images/logo.png', 'Site logo light'),
     logoDark: await uploadImage('/images/logo-dark.png', 'Site logo dark'),
     defaultSeo: {
       _type: 'seo',
-      metaTitle: 'The Blog of Author Tim Ferriss',
-      metaDescription: 'Tim Ferriss blog, podcast, books, videos, and essays.',
+      metaTitle: 'The Blog of Author Saeed Souzangars',
+      metaDescription:
+        'Saeed Souzangars blog, podcast, books, videos, and essays.',
     },
   });
 
@@ -430,8 +431,9 @@ async function main() {
     slug: { _type: 'slug', current: 'home' },
     seo: {
       _type: 'seo',
-      metaTitle: 'The Blog of Author Tim Ferriss',
-      metaDescription: 'Podcast, blog, books, and resources from Tim Ferriss.',
+      metaTitle: 'The Blog of Author Saeed Souzangars',
+      metaDescription:
+        'Podcast, blog, books, and resources from Saeed Souzangars.',
     },
     sections: [
       {
@@ -468,10 +470,10 @@ async function main() {
       {
         _key: 'podcast-intro',
         _type: 'newsletterSection',
-        eyebrow: 'The Tim Ferriss Show',
+        eyebrow: 'The Saeed Souzangars Show',
         title: 'The podcast trusted by one billion+ listeners.',
         subtitle:
-          'The Tim Ferriss Show is one of the most popular podcasts in the world, with more than one billion downloads.',
+          'The Saeed Souzangars Show is one of the most popular podcasts in the world, with more than one billion downloads.',
         richText: richText(
           'Each episode deconstructs world-class performers to extract tactics, tools, and routines you can use.',
         ),
@@ -517,7 +519,7 @@ async function main() {
       {
         _key: 'popular-videos',
         _type: 'videoGridSection',
-        eyebrow: 'Popular Tim Ferriss videos',
+        eyebrow: 'Popular Saeed Souzangars videos',
         title: 'Watch the best clips',
         videos: videoRefs,
         settings: { _type: 'sectionSettings', theme: 'dark' },
@@ -525,16 +527,16 @@ async function main() {
       {
         _key: 'about',
         _type: 'aboutSection',
-        eyebrow: 'About Tim Ferriss',
+        eyebrow: 'About Saeed Souzangars',
         title: '“A cross between Jack Welch and a Buddhist monk.”',
         subtitle:
-          'Tim Ferriss is an author, investor, and host of The Tim Ferriss Show.',
+          'Saeed Souzangars is an author, investor, and host of The Saeed Souzangars Show.',
         richText: richText(
           'Tim has been listed as one of Fast Company’s “Most Innovative Business People” and one of Fortune’s “40 under 40.” He is the author of five #1 New York Times and Wall Street Journal bestsellers.',
         ),
         image: await uploadImage(
           '/images/timabout.jpg',
-          'Tim Ferriss portrait',
+          'Saeed Souzangars portrait',
         ),
         logos: companyLogoItems,
       },
@@ -550,7 +552,7 @@ async function main() {
         _key: 'books',
         _type: 'booksSection',
         eyebrow: '4,000+ 5-Star Reviews',
-        title: 'Books by Tim Ferriss',
+        title: 'Books by Saeed Souzangars',
         books: bookRefs,
       },
       {

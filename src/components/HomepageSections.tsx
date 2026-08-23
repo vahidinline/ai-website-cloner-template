@@ -229,19 +229,19 @@ export function PodcastIntroSection() {
           <div className="absolute -left-8 top-10 h-[72%] w-[76%] rounded-[42px] bg-[#f6f1f1]" />
           <img
             src="/images/podcast-phone-optmized.png"
-            alt="The Tim Ferriss Show phone artwork"
+            alt="The Saeed Souzangars Show phone artwork"
             className="relative z-10 mx-auto h-auto w-full object-contain"
           />
         </div>
         <div>
           <p className="text-[15px] font-bold uppercase tracking-[0.18em] text-[#2c80b8]">
-            The Tim Ferriss Show
+            The Saeed Souzangars Show
           </p>
           <h2 className="mt-4 text-[42px] font-bold leading-[1.02] tracking-[-1.6px] text-[#001523] md:text-[72px]">
             The podcast trusted by one billion+ listeners.
           </h2>
           <p className="mt-6 text-[19px] leading-[1.7] text-[#44515a]">
-            The Tim Ferriss Show is one of the most popular podcasts in the
+            The Saeed Souzangars Show is one of the most popular podcasts in the
             world, with more than one billion downloads. Each episode
             deconstructs world-class performers from eclectic areas to extract
             the tactics, tools, and routines you can use.
@@ -388,7 +388,7 @@ export function VideosSection() {
         <div className="mb-10 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="text-[15px] font-bold uppercase tracking-[0.18em] text-[#87ceff]">
-              Popular Tim Ferriss videos
+              Popular Saeed Souzangars videos
             </p>
             <h2 className="mt-3 text-[42px] font-bold leading-none tracking-[-1.6px] md:text-[72px]">
               Watch the best clips
@@ -434,26 +434,26 @@ export function AboutTimSection() {
         <div className="overflow-hidden rounded-[34px] bg-[#efe9e9]">
           <img
             src="/images/timabout.jpg"
-            alt="Tim Ferriss portrait"
+            alt="Saeed Souzangars portrait"
             className="h-full min-h-[520px] w-full object-cover"
           />
         </div>
         <div>
           <p className="text-[15px] font-bold uppercase tracking-[0.18em] text-[#2c80b8]">
-            About Tim Ferriss
+            About Saeed Souzangars
           </p>
           <h2 className="mt-4 text-[42px] font-bold leading-[1.02] tracking-[-1.6px] text-[#001523] md:text-[72px]">
             “A cross between Jack Welch and a Buddhist monk.”
           </h2>
           <p className="mt-6 text-[19px] leading-[1.7] text-[#44515a]">
-            Tim Ferriss has been listed as one of Fast Company’s “Most
+            Saeed Souzangars has been listed as one of Fast Company’s “Most
             Innovative Business People” and one of Fortune’s “40 under 40.” He
             is an early-stage technology investor/advisor and the author of five
             #1 New York Times and Wall Street Journal bestsellers.
           </p>
           <p className="mt-5 text-[19px] leading-[1.7] text-[#44515a]">
             The Observer and other media have called Tim “the Oprah of audio,”
-            due to the influence of The Tim Ferriss Show — the first
+            due to the influence of The Saeed Souzangars Show — the first
             business/interview podcast to exceed one billion downloads.
           </p>
           <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4">
