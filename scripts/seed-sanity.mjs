@@ -265,17 +265,6 @@ const books = [
   ],
 ];
 
-const companyLogos = [
-  ['/images/uberlogo-1.png', 'Uber'],
-  ['/images/shopify-logo.png', 'Shopify'],
-  ['/images/duoliongoglogo.png', 'Duolingo'],
-  ['/images/taskrabbitlogo.png', 'TaskRabbit'],
-  ['/images/automatticlogo.png', 'Automattic'],
-  ['/images/nextddoorlogo.png', 'Nextdoor'],
-  ['/images/alibabalogo.png', 'Alibaba'],
-  ['/images/spacexlogo.png', 'SpaceX'],
-];
-
 const pressLogos = [
   ['/images/nyt.png', 'New York Times'],
   ['/images/newsweek.png', 'Newsweek'],
@@ -388,16 +377,6 @@ async function main() {
       featured: true,
     });
     bookRefs.push({ _type: 'reference', _ref: id, _key: id });
-  }
-
-  const companyLogoItems = [];
-  for (const [imagePath, name] of companyLogos) {
-    companyLogoItems.push({
-      _key: slugify(name),
-      _type: 'logoItem',
-      name,
-      image: await uploadImage(imagePath, name),
-    });
   }
 
   const pressLogoItems = [];
@@ -538,7 +517,6 @@ async function main() {
           '/images/timabout.jpg',
           'Saeed Souzangars portrait',
         ),
-        logos: companyLogoItems,
       },
       {
         _key: 'press',

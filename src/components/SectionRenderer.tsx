@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { PortableTextRenderer } from './portable-text/PortableTextRenderer';
 import { SanityImage as SanityImageComponent } from './SanityImage';
 import { Button } from './ui/button';
-import { resolveButtonUrl } from '@/sanity/urls';
+import { resolveButtonUrl, resolveInternalUrl } from '@/sanity/urls';
 import type {
   SanityButton,
   SanityImage as SanityImageType,
@@ -200,7 +200,15 @@ function DynamicCardsSection({ section, dark = false }: { section: SanitySection
           const name = typeof record.name === 'string' ? record.name : undefined;
           const description = (['description', 'excerpt', 'summary'] as const).map((key) => (typeof record[key] === 'string' ? (record[key] as string) : undefined)).find(Boolean);
           const slug = record.slug && typeof record.slug === 'object' && typeof (record.slug as { current?: unknown }).current === 'string' ? (record.slug as { current: string }).current : undefined;
-          const href = slug ? (section._type === 'booksSection' ? `/books/${slug}` : section._type === 'videoGridSection' ? `/videos/${slug}` : section._type === 'featuredInterviewsSection' || section._type === 'recentEpisodesSection' ? `/podcast/${slug}` : `/blog/${slug}`) : undefined;
+          const fallbackType = section._type === 'booksSection'
+            ? 'book'
+            : section._type === 'videoGridSection'
+              ? 'video'
+              : section._type === 'featuredInterviewsSection' || section._type === 'recentEpisodesSection'
+                ? 'podcastEpisode'
+                : 'post';
+          const contentType = typeof record._type === 'string' ? record._type : fallbackType;
+          const href = slug ? resolveInternalUrl({ _type: contentType, slug: { current: slug } }) : undefined;
           const key = typeof record._id === 'string' ? record._id : typeof record._key === 'string' ? record._key : `${title ?? name ?? 'item'}-${index}`;
           const card = (
             <>

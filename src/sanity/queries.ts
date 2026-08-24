@@ -47,7 +47,7 @@ export const pageBySlugQuery = groq`*[_type == "page" && slug.current == $slug][
     buttons[] ${buttonFields},
     books[]->{..., coverImage ${imageFields}, buyLinks[]},
     posts[]->{..., mainImage ${imageFields}, categories[]->{title, slug}},
-    episodes[]->{..., coverImage ${imageFields}, guests[]->{name, slug, portrait ${imageFields}}},
+    episodes[]->{..., mainImage ${imageFields}, coverImage ${imageFields}, thumbnail ${imageFields}, guests[]->{name, slug, portrait ${imageFields}}},
     videos[]->{..., thumbnail ${imageFields}}
   }
 }`;

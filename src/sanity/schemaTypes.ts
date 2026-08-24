@@ -637,12 +637,19 @@ const featuredInterviewsSection = defineType({
     ...sectionBaseFields(),
     defineField({
       name: 'episodes',
-      title: 'Episodes',
+      title: 'Featured content',
+      description: 'Select the existing content that should appear as cards in this section. Each card links to the selected item automatically.',
       type: 'array',
       of: [
         defineArrayMember({
           type: 'reference',
-          to: [{ type: 'podcastEpisode' }],
+          to: [
+            { type: 'page' },
+            { type: 'post' },
+            { type: 'podcastEpisode' },
+            { type: 'video' },
+            { type: 'book' },
+          ],
         }),
       ],
     }),
