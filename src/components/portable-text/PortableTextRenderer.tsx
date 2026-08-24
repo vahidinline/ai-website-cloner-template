@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { PortableText, type PortableTextComponents } from '@portabletext/react';
-import { Button } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button';
 import { SanityImage } from '@/components/SanityImage';
 import { urlFor } from '@/sanity/image';
 import { resolveButtonUrl, resolveInternalUrl } from '@/sanity/urls';
@@ -128,20 +128,17 @@ const components: PortableTextComponents = {
     button: ({ value }) => {
       const href = resolveButtonUrl(value);
       if (!value?.label || !href) return null;
+      const className = buttonVariants({ className: 'my-4 rounded-full bg-[#f8c43b] px-6 text-[#001523] hover:bg-[#e0b135]' });
       if (href.startsWith('http')) {
         return (
-          <a href={href} target={value.openInNewTab ? '_blank' : undefined} rel={value.openInNewTab ? 'noreferrer' : undefined} className="inline-block">
-            <Button className="my-4 rounded-full bg-[#f8c43b] px-6 text-[#001523] hover:bg-[#e0b135]">
-              {value.label}
-            </Button>
+          <a href={href} target={value.openInNewTab ? '_blank' : undefined} rel={value.openInNewTab ? 'noreferrer' : undefined} className={className}>
+            {value.label}
           </a>
         );
       }
       return (
-        <Link href={href} className="inline-block">
-          <Button className="my-4 rounded-full bg-[#f8c43b] px-6 text-[#001523] hover:bg-[#e0b135]">
-            {value.label}
-          </Button>
+        <Link href={href} className={className}>
+          {value.label}
         </Link>
       );
     },

@@ -18,6 +18,7 @@ export type SanityButton = {
   internalLink?: { _type?: string; _ref?: string; slug?: SanitySlug };
   variant?: 'primary' | 'secondary' | 'ghost' | 'link';
   openInNewTab?: boolean;
+  icon?: 'linkedin' | 'telegram' | 'x' | 'youtube' | 'instagram';
 };
 
 export type SanityNavigationItem = {

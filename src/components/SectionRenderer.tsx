@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import { PortableTextRenderer } from './portable-text/PortableTextRenderer';
 import { SanityImage as SanityImageComponent } from './SanityImage';
-import { Button } from './ui/button';
+import { Button, buttonVariants } from './ui/button';
+import { cn } from '@/lib/utils';
 import { resolveButtonUrl, resolveInternalUrl } from '@/sanity/urls';
 import type {
   SanityButton,
@@ -36,20 +37,20 @@ function MissingSectionFallback({
 function ButtonLink({ button, className }: { button?: SanityButton; className?: string }) {
   const href = resolveButtonUrl(button);
   if (!button?.label || !href) return null;
+  const buttonClassName = cn(
+    buttonVariants({ className: 'rounded-full bg-[#f8c43b] px-6 py-5 font-bold text-[#001523] hover:bg-[#e0b135]' }),
+    className,
+  );
   if (href.startsWith('http')) {
     return (
-      <a href={href} target={button.openInNewTab ? '_blank' : undefined} rel={button.openInNewTab ? 'noreferrer' : undefined} className={className}>
-        <Button className="rounded-full bg-[#f8c43b] px-6 py-5 font-bold text-[#001523] hover:bg-[#e0b135]">
-          {button.label}
-        </Button>
+      <a href={href} target={button.openInNewTab ? '_blank' : undefined} rel={button.openInNewTab ? 'noreferrer' : undefined} className={buttonClassName}>
+        {button.label}
       </a>
     );
   }
   return (
-    <Link href={href} className={className}>
-      <Button className="rounded-full bg-[#f8c43b] px-6 py-5 font-bold text-[#001523] hover:bg-[#e0b135]">
-        {button.label}
-      </Button>
+    <Link href={href} className={buttonClassName}>
+      {button.label}
     </Link>
   );
 }
@@ -151,7 +152,7 @@ function DynamicHeroSection({ section }: { section: SanitySection }) {
           </div>
         </div>
         {image?.url ? (
-          <SanityImageComponent image={image} alt={image.alt || ''} className="mx-auto max-h-[6000px] w-full self-end rounded-t-[34px] object-cover" priority />
+          <SanityImageComponent image={image} alt={image.alt || ''} className="mx-auto max-h-[6000px] w-full self-end rounded-t-[34px] object-cover" sizes="(min-width: 768px) 50vw, 100vw" priority />
         ) : null}
       </div>
     </SectionShell>
@@ -179,7 +180,7 @@ function GenericRichTextSection({ section }: { section: SanitySection }) {
           </div>
         </div>
         {image?.url ? (
-          <SanityImageComponent image={image} alt={image.alt || ''} className={`w-full rounded-[34px] object-cover ${imageOnRight ? '' : 'hidden md:block'}`} />
+          <SanityImageComponent image={image} alt={image.alt || ''} className={`w-full rounded-[34px] object-cover ${imageOnRight ? '' : 'hidden md:block'}`} sizes="(min-width: 768px) 43vw, 100vw" />
         ) : null}
       </div>
     </SectionShell>
@@ -312,7 +313,7 @@ function AboutSection({ section }: { section: SanitySection }) {
           </div>
         </div>
         {section.image?.url ? (
-          <SanityImageComponent image={section.image} alt={section.image.alt || ''} className="w-full rounded-[34px] object-cover" />
+          <SanityImageComponent image={section.image} alt={section.image.alt || ''} className="w-full rounded-[34px] object-cover" sizes="(min-width: 768px) 43vw, 100vw" />
         ) : null}
       </div>
     </SectionShell>
@@ -329,7 +330,11 @@ function NewsletterSection({ section }: { section: SanitySection }) {
             <PortableTextRenderer value={section.richText || section.content} />
           </div>
           <form className="mt-8 flex max-w-[520px] flex-wrap gap-3">
+            <label htmlFor={`newsletter-email-${section._key || 'signup'}`} className="sr-only">
+              Email address
+            </label>
             <input
+              id={`newsletter-email-${section._key || 'signup'}`}
               type="email"
               name="email"
               required
@@ -344,7 +349,7 @@ function NewsletterSection({ section }: { section: SanitySection }) {
           </form>
         </div>
         {section.image?.url ? (
-          <SanityImageComponent image={section.image} alt={section.image.alt || ''} className="w-full rounded-[34px] object-cover" />
+          <SanityImageComponent image={section.image} alt={section.image.alt || ''} className="w-full rounded-[34px] object-cover" sizes="(min-width: 768px) 50vw, 100vw" />
         ) : null}
       </div>
     </SectionShell>
@@ -411,6 +416,7 @@ function EmbedSection({ section }: { section: SanitySection }) {
           <iframe
             src={embed.url}
             title={embed.title || section.title || 'Embedded content'}
+            loading="lazy"
             className="h-full w-full"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen

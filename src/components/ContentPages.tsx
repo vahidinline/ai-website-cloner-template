@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button';
 import { SanityImage } from '@/components/SanityImage';
 import { PortableTextRenderer } from '@/components/portable-text/PortableTextRenderer';
 import type { SanityImage as SanityImageType } from '@/sanity/types';
@@ -154,10 +154,9 @@ export function ExternalLinks({ links }: { links?: BuyLink[] }) {
             key={link._key || `${link.label}-${index}`}
             href={link.url}
             target="_blank"
-            rel="noreferrer">
-            <Button className="rounded-full bg-[#f8c43b] px-6 py-5 font-bold text-[#001523] hover:bg-[#e0b135]">
-              {link.label}
-            </Button>
+            rel="noreferrer"
+            className={buttonVariants({ className: 'rounded-full bg-[#f8c43b] px-6 py-5 font-bold text-[#001523] hover:bg-[#e0b135]' })}>
+            {link.label}
           </a>
         );
       })}

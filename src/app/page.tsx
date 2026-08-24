@@ -19,6 +19,6 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function HomePage() {
-  const { page, settings } = await getData();
-  return <div className="flex min-h-screen flex-col bg-[#fbf9f9]"><Header /><main className="flex-1">{page?.sections?.length ? <SectionRenderer sections={page.sections} /> : null}</main>{settings?.structuredData ? <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(settings.structuredData) }} /> : null}<Footer /></div>;
+  const { page } = await getData();
+  return <div className="flex min-h-screen flex-col bg-[#fbf9f9]"><Header /><main className="flex-1">{page?.sections?.length ? <SectionRenderer sections={page.sections} /> : null}</main><Footer /></div>;
 }

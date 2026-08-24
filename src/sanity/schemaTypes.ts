@@ -92,7 +92,21 @@ const button = defineType({
       type: 'boolean',
       initialValue: false,
     }),
-    defineField({ name: 'icon', title: 'Icon name', type: 'string' }),
+    defineField({
+      name: 'icon',
+      title: 'Icon',
+      description: 'For footer social links, choose the matching platform icon.',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'LinkedIn', value: 'linkedin' },
+          { title: 'Telegram', value: 'telegram' },
+          { title: 'X', value: 'x' },
+          { title: 'YouTube', value: 'youtube' },
+          { title: 'Instagram', value: 'instagram' },
+        ],
+      },
+    }),
   ],
 });
 
