@@ -16,8 +16,6 @@ import {
 } from '@/sanity/queries';
 import type { SanityImage, SanitySeo } from '@/sanity/types';
 
-export const dynamicParams = false;
-
 type PodcastEpisode = {
   title?: string;
   slug?: { current?: string };
@@ -27,6 +25,7 @@ type PodcastEpisode = {
   summary?: string;
   body?: unknown[];
   transcript?: unknown[];
+  transcriptTitle?: string;
   audioUrl?: string;
   externalLinks?: BuyLink[];
   seo?: SanitySeo;
@@ -88,9 +87,7 @@ export default async function PodcastEpisodePage({
         <article className="mx-auto max-w-[1200px]">
           <ContentHero
             eyebrow={
-              episode.episodeNumber
-                ? `Podcast episode ${episode.episodeNumber}`
-                : 'Podcast episode'
+              episode.episodeNumber ? String(episode.episodeNumber) : undefined
             }
             title={episode.title}
             description={episode.summary}
@@ -102,16 +99,18 @@ export default async function PodcastEpisodePage({
               className="mt-10 w-full max-w-[860px]"
               controls
               src={episode.audioUrl}>
-              <a href={episode.audioUrl}>Listen to this episode</a>
+              <a href={episode.audioUrl}>{episode.audioUrl}</a>
             </audio>
           ) : null}
           <ExternalLinks links={episode.externalLinks} />
           <DetailBody value={episode.body} />
           {episode.transcript?.length ? (
             <section className="mt-14 max-w-[860px] border-t border-[#001523]/10 pt-10">
-              <h2 className="mb-6 text-[38px] font-bold tracking-[-1px] text-[#001523]">
-                Transcript
-              </h2>
+              {episode.transcriptTitle ? (
+                <h2 className="mb-6 text-[38px] font-bold tracking-[-1px] text-[#001523]">
+                  {episode.transcriptTitle}
+                </h2>
+              ) : null}
               <DetailBody value={episode.transcript} />
             </section>
           ) : null}

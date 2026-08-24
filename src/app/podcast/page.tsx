@@ -5,8 +5,8 @@ import {
   type ContentCardItem,
 } from '@/components/ContentPages';
 import { hasValidSanityConfig } from '@/sanity/env';
-import { getPodcastEpisodes } from '@/sanity/queries';
-import type { SanityImage } from '@/sanity/types';
+import { getArchivePageSettings, getPodcastEpisodes } from '@/sanity/queries';
+import type { SanityArchivePageSettings, SanityImage } from '@/sanity/types';
 
 type PodcastEpisodeListItem = {
   _id: string;
@@ -19,9 +19,7 @@ type PodcastEpisodeListItem = {
 };
 
 export default async function PodcastIndexPage() {
-  const episodes = hasValidSanityConfig
-    ? ((await getPodcastEpisodes()) as PodcastEpisodeListItem[])
-    : [];
+  const [episodes, settings] = hasValidSanityConfig ? await Promise.all([getPodcastEpisodes() as Promise<PodcastEpisodeListItem[]>, getArchivePageSettings('podcast') as Promise<SanityArchivePageSettings | null>]) : [[], null];
 
   const items: ContentCardItem[] = episodes.map((episode) => ({
     _id: episode._id,
@@ -39,11 +37,12 @@ export default async function PodcastIndexPage() {
     <div className="flex min-h-screen flex-col bg-[#fbf9f9]">
       <Header />
       <ContentArchivePage
-        eyebrow="Podcast"
-        title="Podcast episodes"
+        eyebrow={settings?.eyebrow || ''}
+        title={settings?.title || ''}
+        introduction={settings?.introduction}
         items={items}
         basePath="/podcast"
-        emptyMessage="No podcast episodes have been published yet."
+        emptyMessage={settings?.emptyState || ''}
       />
       <Footer />
     </div>

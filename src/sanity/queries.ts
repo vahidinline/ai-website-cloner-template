@@ -1,5 +1,7 @@
 import { groq } from 'next-sanity';
+import { normalizeRedirectSource } from '@/lib/redirect-validation';
 import { sanityClient } from './client';
+import type { SanityRedirect } from './types';
 
 export { sanityClient };
 
@@ -15,49 +17,35 @@ export const imageFields = groq`{
   "height": asset->metadata.dimensions.height
 }`;
 
+/** Expands a button's internal reference so resolveButtonUrl() can resolve slugs. */
+export const buttonFields = groq`{
+  ...,
+  "internalLink": internalLink->{_type, slug}
+}`;
+
 export const pageBySlugQuery = groq`*[_type == "page" && slug.current == $slug][0]{
   _id,
   title,
   slug,
+  status,
   seo,
   sections[]{
     ...,
+    settings{..., backgroundImage ${imageFields}},
     image ${imageFields},
     backgroundImage ${imageFields},
     foregroundImage ${imageFields},
     images[] ${imageFields},
     logos[]{..., image ${imageFields}},
-    cards[]{..., image ${imageFields}},
-    books[]->{..., coverImage ${imageFields}},
-    posts[]->{..., mainImage ${imageFields}, categories[]->{title, slug}},
-    episodes[]->{..., coverImage ${imageFields}, guests[]->{name, slug, portrait ${imageFields}}},
-    videos[]->{..., thumbnail ${imageFields}}
-  }
-}`;
-
-export const homePageQuery = groq`*[_type == "page" && slug.current == "home"][0]{
-  title,
-  seo{
-    metaTitle,
-    metaDescription,
-    canonicalUrl,
-    noIndex,
-    ogImage ${imageFields}
-  },
-  sections[]{
-    ...,
-    _type,
-    settings{
-      ...,
-      backgroundImage ${imageFields}
-    },
-    image ${imageFields},
-    backgroundImage ${imageFields},
-    foregroundImage ${imageFields},
-    images[] ${imageFields},
-    logos[]{..., image ${imageFields}},
-    cards[]{..., image ${imageFields}},
-    books[]->{..., coverImage ${imageFields}},
+    stats,
+    items,
+    embed,
+    cards[]{..., image ${imageFields}, link ${buttonFields}},
+    primaryButton ${buttonFields},
+    secondaryButton ${buttonFields},
+    cta ${buttonFields},
+    buttons[] ${buttonFields},
+    books[]->{..., coverImage ${imageFields}, buyLinks[]},
     posts[]->{..., mainImage ${imageFields}, categories[]->{title, slug}},
     episodes[]->{..., coverImage ${imageFields}, guests[]->{name, slug, portrait ${imageFields}}},
     videos[]->{..., thumbnail ${imageFields}}
@@ -138,80 +126,135 @@ export const booksQuery = groq`*[_type == "book"] | order(order asc, title asc){
 
 export const bookBySlugQuery = groq`*[_type == "book" && slug.current == $slug][0]{
   ...,
-  coverImage ${imageFields}
+  coverImage ${imageFields},
+  buyLinks[]
 }`;
 
 export const siteSettingsQuery = groq`*[_type == "siteSettings"][0]{
   ...,
   logoLight ${imageFields},
   logoDark ${imageFields},
+  favicon ${imageFields},
+  appleTouchIcon ${imageFields},
+  androidIcons[] ${imageFields},
   defaultSeo,
   footerCopyright,
   affiliateDisclosure,
+  structuredData{
+    ..., image ${imageFields}
+  },
   footer{
     ...,
     logo ${imageFields},
     columns[]{
       ...,
-      links[]{..., internalLink->{_type, slug}}
+      links[] ${buttonFields}
     },
-    socialLinks[]{..., internalLink->{_type, slug}}
+    socialLinks[] ${buttonFields}
   },
   footerCta{
     ...,
+    settings{..., backgroundImage ${imageFields}},
     image ${imageFields},
-    buttons[]{..., internalLink->{_type, slug}}
+    backgroundImage ${imageFields},
+    foregroundImage ${imageFields},
+    buttons[] ${buttonFields}
   },
-  footerNavigation[]{
-    ...,
-    internalLink->{_type, slug}
-  },
-  socialLinks[]{
-    ...,
-    internalLink->{_type, slug}
+  footerNavigation[] ${buttonFields},
+  socialLinks[] ${buttonFields},
+  mainNavigation[] ${buttonFields},
+  header{
+    enabled,
+    searchLabel,
+    action ${buttonFields},
+    navigationMenu->{
+      _id,
+      title,
+      items[]{_key, label, url, openInNewTab, "internalLink": internalLink->{_type, slug}}
+    }
   }
 }`;
 
+export const archivePageSettingsQuery = groq`*[_type == "archivePageSettings" && archiveType == $archiveType][0]{
+  archiveType, eyebrow, title, introduction, emptyState, ordering, itemsPerPage,
+  seo{..., ogImage ${imageFields}}
+}`;
+
+export const sitemapDocumentsQuery = groq`*[_type in ["page", "post", "podcastEpisode", "video", "book"] && defined(slug.current) && !coalesce(seo.noIndex, false)]{
+  _type, "slug": slug.current, _updatedAt, publishedAt, "canonicalUrl": seo.canonicalUrl
+}`;
+
+export const redirectsQuery = groq`*[_type == "redirect" && enabled == true && (!defined(expiresAt) || expiresAt > now())]{
+  sourcePath, destinationUrl, destinationInternal->{_type, slug}, statusCode
+}`;
+
+export const allRedirectsQuery = groq`*[_type == "redirect"] | order(sourcePath asc){
+  _id, sourcePath, destinationUrl, destinationInternal->{_type, slug}, statusCode, enabled, expiresAt, notes, _createdAt, _updatedAt
+}`;
+
+async function fetchSanity<T>(query: string, params: Record<string, string> = {}, tags: string[] = []): Promise<T> {
+  return sanityClient.fetch<T>(query, params, {
+    next: { revalidate: 60, tags },
+  });
+}
+
 export async function getPageBySlug(slug: string) {
-  return sanityClient.fetch(pageBySlugQuery, { slug });
+  return fetchSanity(pageBySlugQuery, { slug }, ['pages', `page:${slug}`]);
 }
 
 export async function getHomePage() {
-  return sanityClient.fetch(homePageQuery);
+  return getPageBySlug('home');
 }
 
 export async function getPostBySlug(slug: string) {
-  return sanityClient.fetch(postBySlugQuery, { slug });
+  return fetchSanity(postBySlugQuery, { slug }, ['posts', `post:${slug}`]);
 }
 
 export async function getPosts() {
-  return sanityClient.fetch(postsQuery);
+  return fetchSanity(postsQuery, {}, ['posts']);
 }
 
 export async function getPodcastEpisodes() {
-  return sanityClient.fetch(podcastEpisodesQuery);
+  return fetchSanity(podcastEpisodesQuery, {}, ['podcastEpisodes']);
 }
 
 export async function getPodcastEpisodeBySlug(slug: string) {
-  return sanityClient.fetch(podcastEpisodeBySlugQuery, { slug });
+  return fetchSanity(podcastEpisodeBySlugQuery, { slug }, ['podcastEpisodes', `podcastEpisode:${slug}`]);
 }
 
 export async function getVideos() {
-  return sanityClient.fetch(videosQuery);
+  return fetchSanity(videosQuery, {}, ['videos']);
 }
 
 export async function getVideoBySlug(slug: string) {
-  return sanityClient.fetch(videoBySlugQuery, { slug });
+  return fetchSanity(videoBySlugQuery, { slug }, ['videos', `video:${slug}`]);
 }
 
 export async function getBooks() {
-  return sanityClient.fetch(booksQuery);
+  return fetchSanity(booksQuery, {}, ['books']);
 }
 
 export async function getBookBySlug(slug: string) {
-  return sanityClient.fetch(bookBySlugQuery, { slug });
+  return fetchSanity(bookBySlugQuery, { slug }, ['books', `book:${slug}`]);
 }
 
 export async function getSiteSettings() {
-  return sanityClient.fetch(siteSettingsQuery);
+  return fetchSanity(siteSettingsQuery, {}, ['site-settings']);
+}
+
+export async function getArchivePageSettings(archiveType: string) {
+  return fetchSanity(archivePageSettingsQuery, { archiveType }, ['archive-settings', `archive:${archiveType}`]);
+}
+
+export async function getRedirect(sourcePath: string) {
+  const redirects = await fetchSanity<SanityRedirect[]>(redirectsQuery, {}, ['redirects']);
+  return redirects.find((redirect) => normalizeRedirectSource(redirect.sourcePath) === sourcePath) ?? null;
+}
+
+export async function getAllRedirects() {
+  return fetchSanity(allRedirectsQuery, {}, ['redirects']);
+}
+
+export async function getSitemapDocuments() {
+  return fetchSanity(sitemapDocumentsQuery, {}, ['sitemap', 'site-settings']);
 }

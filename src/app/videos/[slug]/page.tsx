@@ -10,8 +10,7 @@ import {
   sanityClient,
 } from '@/sanity/queries';
 import type { SanityImage, SanitySeo } from '@/sanity/types';
-
-export const dynamicParams = false;
+import { embedYouTubeUrl } from '@/sanity/urls';
 
 type Video = {
   title?: string;
@@ -71,22 +70,20 @@ export default async function VideoPage({ params }: VideoPageProps) {
       <main className="flex-1 px-[18px] pb-20 pt-[170px]">
         <article className="mx-auto max-w-[1200px]">
           <ContentHero
-            eyebrow="Video"
             title={video.title}
             description={video.description}
             publishedAt={video.publishedAt}
             image={video.thumbnail}
           />
-          {video.youtubeUrl ? (
-            <div className="mt-12 overflow-hidden rounded-[34px] bg-[#001523] p-6 text-white">
-              <p className="text-lg font-bold">Watch this video</p>
-              <a
-                href={video.youtubeUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="mt-2 inline-block break-all text-[#f8c43b] underline underline-offset-4">
-                {video.youtubeUrl}
-              </a>
+          {video.youtubeUrl && embedYouTubeUrl(video.youtubeUrl) ? (
+            <div className="aspect-video mt-12 w-full overflow-hidden rounded-[34px]">
+              <iframe
+                src={embedYouTubeUrl(video.youtubeUrl)!}
+                title={video.title || 'Embedded video'}
+                className="h-full w-full"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
             </div>
           ) : null}
         </article>

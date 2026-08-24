@@ -1,7 +1,9 @@
 import Link from 'next/link';
 import { PortableText, type PortableTextComponents } from '@portabletext/react';
 import { Button } from '@/components/ui/button';
+import { SanityImage } from '@/components/SanityImage';
 import { urlFor } from '@/sanity/image';
+import { resolveButtonUrl, resolveInternalUrl } from '@/sanity/urls';
 
 type PortableTextRendererProps = {
   value?: unknown[];
@@ -38,23 +40,27 @@ const components: PortableTextComponents = {
   },
   marks: {
     link: ({ children, value }) => {
-      const href = typeof value?.href === 'string' ? value.href : '#';
-      const openInNewTab = Boolean(value?.openInNewTab);
+      const href = typeof value?.href === 'string' && value.href ? value.href : undefined;
+      if (!href) return <>{children}</>;
       return (
         <a
           href={href}
-          target={openInNewTab ? '_blank' : undefined}
-          rel={openInNewTab ? 'noreferrer' : undefined}
+          target={value?.openInNewTab ? '_blank' : undefined}
+          rel={value?.openInNewTab ? 'noreferrer' : undefined}
           className="font-semibold underline underline-offset-4">
           {children}
         </a>
       );
     },
-    internalLink: ({ children }) => (
-      <Link href="#" className="font-semibold underline underline-offset-4">
-        {children}
-      </Link>
-    ),
+    internalLink: ({ children, value }) => {
+      const href = resolveInternalUrl(value?.reference);
+      if (!href) return <>{children}</>;
+      return (
+        <Link href={href} className="font-semibold underline underline-offset-4">
+          {children}
+        </Link>
+      );
+    },
     textColor: ({ children, value }) => (
       <span
         style={{
@@ -102,13 +108,15 @@ const components: PortableTextComponents = {
         (imageValue.asset ? urlFor(imageValue).url() : undefined);
       if (!imageUrl) return null;
 
+      const image = imageUrl === imageValue.url ? imageValue : undefined;
       return (
         <figure className="my-8 overflow-hidden rounded-[28px]">
-          <img
-            src={imageUrl}
-            alt={imageValue.alt || ''}
-            className="h-auto w-full object-cover"
-          />
+          {image ? (
+            <SanityImage image={image} className="h-auto w-full object-cover" sizes="(min-width: 860px) 860px, 100vw" />
+          ) : (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img src={imageUrl} alt={imageValue.alt || ''} className="h-auto w-full object-cover" />
+          )}
           {imageValue.caption ? (
             <figcaption className="mt-3 text-center text-sm text-current/60">
               {imageValue.caption}
@@ -118,50 +126,57 @@ const components: PortableTextComponents = {
       );
     },
     button: ({ value }) => {
-      const buttonValue = value as {
-        label?: string;
-        url?: string;
-        variant?: string;
-      };
-      if (!buttonValue?.label) return null;
+      const href = resolveButtonUrl(value);
+      if (!value?.label || !href) return null;
+      if (href.startsWith('http')) {
+        return (
+          <a href={href} target={value.openInNewTab ? '_blank' : undefined} rel={value.openInNewTab ? 'noreferrer' : undefined} className="inline-block">
+            <Button className="my-4 rounded-full bg-[#f8c43b] px-6 text-[#001523] hover:bg-[#e0b135]">
+              {value.label}
+            </Button>
+          </a>
+        );
+      }
       return (
-        <a href={buttonValue.url || '#'} className="inline-block">
+        <Link href={href} className="inline-block">
           <Button className="my-4 rounded-full bg-[#f8c43b] px-6 text-[#001523] hover:bg-[#e0b135]">
-            {buttonValue.label}
+            {value.label}
           </Button>
-        </a>
+        </Link>
       );
     },
     callout: ({ value }) => {
-      const calloutValue = value as {
-        title?: string;
-        body?: string;
-        tone?: string;
-      };
+      if (!value?.title && !value?.body) return null;
       return (
         <aside className="my-8 rounded-[24px] bg-[#f6f1f1] p-6 text-[#001523]">
-          {calloutValue.title ? (
-            <h4 className="text-xl font-bold">{calloutValue.title}</h4>
+          {value.title ? (
+            <h4 className="text-xl font-bold">{value.title}</h4>
           ) : null}
-          {calloutValue.body ? (
-            <p className="mt-2 text-base leading-7">{calloutValue.body}</p>
+          {value.body ? (
+            <p className="mt-2 text-base leading-7">{value.body}</p>
           ) : null}
         </aside>
       );
     },
     embed: ({ value }) => {
-      const embedValue = value as { url?: string; title?: string };
-      if (!embedValue?.url) return null;
+      if (!value?.url && !value?.embedCode) return null;
+      if (value.embedCode) {
+        return (
+          <div
+            className="my-8 [&_iframe]:aspect-video [&_iframe]:w-full"
+            dangerouslySetInnerHTML={{ __html: value.embedCode }}
+          />
+        );
+      }
       return (
-        <div className="my-8 rounded-[24px] bg-[#001523] p-6 text-white">
-          <p className="font-bold">{embedValue.title || 'Embedded content'}</p>
-          <a
-            href={embedValue.url}
-            className="mt-2 inline-block underline"
-            target="_blank"
-            rel="noreferrer">
-            {embedValue.url}
-          </a>
+        <div className="aspect-video my-8 w-full overflow-hidden rounded-[24px]">
+          <iframe
+            src={value.url}
+            title={value.title || 'Embedded content'}
+            className="h-full w-full"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
         </div>
       );
     },
@@ -169,27 +184,6 @@ const components: PortableTextComponents = {
 };
 
 export function PortableTextRenderer({ value }: PortableTextRendererProps) {
-  console.log('[homepage-debug] PortableTextRenderer value:', value);
-
-  if (Array.isArray(value)) {
-    console.log(
-      '[homepage-debug] PortableTextRenderer malformed/null blocks:',
-      value
-        .map((block, index) => ({ index, block }))
-        .filter(({ block }) => {
-          if (block == null) return true;
-          if (typeof block !== 'object') return true;
-
-          const blockRecord = block as Record<string, unknown>;
-          if (blockRecord._type === 'block' && blockRecord.children == null) {
-            return true;
-          }
-
-          return false;
-        }),
-    );
-  }
-
   if (!value?.length) return null;
   return <PortableText value={value} components={components} />;
 }

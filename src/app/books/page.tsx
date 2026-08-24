@@ -5,8 +5,8 @@ import {
 import { Footer } from '@/components/Footer';
 import { Header } from '@/components/Header';
 import { hasValidSanityConfig } from '@/sanity/env';
-import { getBooks } from '@/sanity/queries';
-import type { SanityImage } from '@/sanity/types';
+import { getArchivePageSettings, getBooks } from '@/sanity/queries';
+import type { SanityArchivePageSettings, SanityImage } from '@/sanity/types';
 
 type BookListItem = {
   _id: string;
@@ -16,9 +16,7 @@ type BookListItem = {
 };
 
 export default async function BooksIndexPage() {
-  const books = hasValidSanityConfig
-    ? ((await getBooks()) as BookListItem[])
-    : [];
+  const [books, settings] = hasValidSanityConfig ? await Promise.all([getBooks() as Promise<BookListItem[]>, getArchivePageSettings('books') as Promise<SanityArchivePageSettings | null>]) : [[], null];
 
   const items: ContentCardItem[] = books.map((book) => ({
     _id: book._id,
@@ -31,11 +29,12 @@ export default async function BooksIndexPage() {
     <div className="flex min-h-screen flex-col bg-[#fbf9f9]">
       <Header />
       <ContentArchivePage
-        eyebrow="Books"
-        title="Books"
+        eyebrow={settings?.eyebrow || ''}
+        title={settings?.title || ''}
+        introduction={settings?.introduction}
         items={items}
         basePath="/books"
-        emptyMessage="No books have been published yet."
+        emptyMessage={settings?.emptyState || ''}
       />
       <Footer />
     </div>

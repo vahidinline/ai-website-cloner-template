@@ -1,30 +1,13 @@
 import Link from 'next/link';
+import { SanityImage } from './SanityImage';
 import { getSiteSettings } from '@/sanity/queries';
 import { hasValidSanityConfig } from '@/sanity/env';
 import type { SanityButton, SanitySiteSettings } from '@/sanity/types';
 import { SectionRenderer } from './SectionRenderer';
-
-function getButtonHref(button: SanityButton) {
-  if (button.url) return button.url;
-  const slug = button.internalLink?.slug?.current;
-  if (!slug) return undefined;
-
-  switch (button.internalLink?._type) {
-    case 'post':
-      return `/blog/${slug}`;
-    case 'podcastEpisode':
-      return `/podcast/${slug}`;
-    case 'video':
-      return `/videos/${slug}`;
-    case 'book':
-      return `/books/${slug}`;
-    default:
-      return `/${slug}`;
-  }
-}
+import { resolveButtonUrl } from '@/sanity/urls';
 
 function FooterLink({ button }: { button: SanityButton }) {
-  const href = getButtonHref(button);
+  const href = resolveButtonUrl(button);
   if (!button.label || !href) return null;
 
   const className = 'hover:underline';
@@ -68,10 +51,12 @@ export async function Footer() {
         <div className="mx-auto flex max-w-[1200px] flex-col flex-wrap gap-[21.6px] md:flex-row">
           <div className="flex w-full flex-col md:w-[420px]">
             {(footer?.logo?.url || settings?.logoDark?.url) ? (
-              <img
-                src={footer?.logo?.url || settings?.logoDark?.url || ''}
+              <SanityImage
+                image={footer?.logo || settings?.logoDark}
                 alt={footer?.logo?.alt || settings?.logoDark?.alt || settings?.siteTitle || ''}
                 className="mb-[21.6px] w-[150px]"
+                fallbackWidth={300}
+                fallbackHeight={64}
               />
             ) : null}
             {(footer?.copyright || settings?.footerCopyright) ? (
@@ -81,17 +66,17 @@ export async function Footer() {
             ) : null}
             {socialLinks.length > 0 ? (
               <div className="mt-[21.6px] flex flex-wrap gap-[8px_21.6px]">
-                {socialLinks.map((button, index) => (
+                {socialLinks.map((button, index) => resolveButtonUrl(button) ? (
                   <a
                     key={`${button.label}-${index}`}
-                    href={getButtonHref(button) || '#'}
+                    href={resolveButtonUrl(button)}
                     target={button.openInNewTab ? '_blank' : undefined}
                     rel={button.openInNewTab ? 'noreferrer' : undefined}
                     aria-label={button.label}
                     className="flex h-12 w-12 items-center justify-center rounded-full bg-[#f6f1f1] text-[#001523] transition-colors hover:bg-gray-200">
                     <span className="text-xs font-semibold">{button.label}</span>
                   </a>
-                ))}
+                ) : null)}
               </div>
             ) : null}
           </div>

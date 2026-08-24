@@ -24,11 +24,14 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
+    "test": "tsc -p tsconfig.test.json && node --test \".test-build/src/sanity/urls.test.js\" \".test-build/src/lib/redirect-validation.test.js\" \".test-build/src/app/api/revalidate/tags.test.js\" \".test-build/src/app/robots.test.js\" \".test-build/src/app/sitemap-entries.test.js\"",
     "sanity:seed": "node scripts/seed-sanity.mjs",
     "sanity:fix-keys": "node scripts/fix-sanity-array-keys.mjs",
     "sanity:fix-keys:dry-run": "node scripts/fix-sanity-array-keys.mjs --dry-run",
     "sanity:fix-refs": "node scripts/fix-sanity-dangling-references.mjs",
     "sanity:fix-refs:dry-run": "node scripts/fix-sanity-dangling-references.mjs --dry-run",
+    "redirects:export": "node scripts/redirects.mjs export",
+    "redirects:import": "node scripts/redirects.mjs import",
     "check": "pnpm lint && pnpm typecheck && pnpm build"
   },
   "dependencies": {

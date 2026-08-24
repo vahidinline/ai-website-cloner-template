@@ -5,8 +5,8 @@ import {
 import { Footer } from '@/components/Footer';
 import { Header } from '@/components/Header';
 import { hasValidSanityConfig } from '@/sanity/env';
-import { getVideos } from '@/sanity/queries';
-import type { SanityImage } from '@/sanity/types';
+import { getArchivePageSettings, getVideos } from '@/sanity/queries';
+import type { SanityArchivePageSettings, SanityImage } from '@/sanity/types';
 
 type VideoListItem = {
   _id: string;
@@ -18,9 +18,7 @@ type VideoListItem = {
 };
 
 export default async function VideosIndexPage() {
-  const videos = hasValidSanityConfig
-    ? ((await getVideos()) as VideoListItem[])
-    : [];
+  const [videos, settings] = hasValidSanityConfig ? await Promise.all([getVideos() as Promise<VideoListItem[]>, getArchivePageSettings('videos') as Promise<SanityArchivePageSettings | null>]) : [[], null];
 
   const items: ContentCardItem[] = videos.map((video) => ({
     _id: video._id,
@@ -35,11 +33,12 @@ export default async function VideosIndexPage() {
     <div className="flex min-h-screen flex-col bg-[#fbf9f9]">
       <Header />
       <ContentArchivePage
-        eyebrow="Videos"
-        title="Latest videos"
+        eyebrow={settings?.eyebrow || ''}
+        title={settings?.title || ''}
+        introduction={settings?.introduction}
         items={items}
         basePath="/videos"
-        emptyMessage="No videos have been published yet."
+        emptyMessage={settings?.emptyState || ''}
       />
       <Footer />
     </div>

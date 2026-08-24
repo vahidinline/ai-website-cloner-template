@@ -6,11 +6,13 @@ export type SanityImage = {
   url?: string;
   alt?: string;
   caption?: string;
+  objectFit?: 'cover' | 'contain' | 'fill';
   width?: number;
   height?: number;
 };
 
 export type SanityButton = {
+  _key?: string;
   label?: string;
   url?: string;
   internalLink?: { _type?: string; _ref?: string; slug?: SanitySlug };
@@ -18,8 +20,40 @@ export type SanityButton = {
   openInNewTab?: boolean;
 };
 
+export type SanityNavigationItem = {
+  _key?: string;
+  label?: string;
+  url?: string;
+  internalLink?: { _type?: string; _ref?: string; slug?: SanitySlug };
+  openInNewTab?: boolean;
+};
+
+export type SanityNavigationMenu = {
+  _id?: string;
+  title?: string;
+  items?: SanityNavigationItem[];
+};
+
 export type SanitySiteSettings = {
   siteTitle?: string;
+  siteUrl?: string;
+  defaultLanguage?: string;
+  direction?: 'ltr' | 'rtl';
+  manifestName?: string;
+  themeColor?: string;
+  favicon?: SanityImage;
+  appleTouchIcon?: SanityImage;
+  androidIcons?: SanityImage[];
+  robots?: { allowIndexing?: boolean; disallowPaths?: string[]; sitemapEnabled?: boolean };
+  structuredData?: {
+    type?: string;
+    name?: string;
+    url?: string;
+    description?: string;
+    image?: SanityImage;
+    sameAs?: string[];
+  };
+  header?: { enabled?: boolean; navigationMenu?: SanityNavigationMenu; searchLabel?: string; action?: SanityButton };
   logoLight?: SanityImage;
   logoDark?: SanityImage;
   mainNavigation?: SanityButton[];
@@ -47,21 +81,175 @@ export type SanitySeo = {
   noIndex?: boolean;
 };
 
+export type SanitySectionSettings = {
+  sectionId?: string;
+  anchorLabel?: string;
+  isHidden?: boolean;
+  theme?: 'default' | 'light' | 'dark' | 'brand' | 'custom';
+  backgroundColorToken?: string;
+  backgroundColor?: string;
+  textColorToken?: string;
+  textColor?: string;
+  backgroundImage?: SanityImage;
+  overlayColor?: string;
+  overlayOpacity?: number;
+  paddingTop?: string;
+  paddingBottom?: string;
+  marginTop?: string;
+  marginBottom?: string;
+  containerWidth?: string;
+  customClassName?: string;
+};
+
+export type SanityStatItem = {
+  _key?: string;
+  value?: string;
+  label?: string;
+};
+
+export type SanityFaqItem = {
+  _key?: string;
+  question?: string;
+  answer?: unknown[];
+};
+
+export type SanityEmbed = {
+  title?: string;
+  url?: string;
+  embedCode?: string;
+  aspectRatio?: string;
+};
+
+export type SanityCardItem = {
+  _key?: string;
+  icon?: string;
+  image?: SanityImage;
+  title?: string;
+  description?: string;
+  link?: SanityButton;
+};
+
+export type SanityLogoItem = {
+  _key?: string;
+  name?: string;
+  image?: SanityImage;
+  url?: string;
+};
+
 export type SanitySection = {
   _type: string;
   _key?: string;
-  title?: string;
+  headingLevel?: 'h1' | 'h2' | 'h3';
   eyebrow?: string;
+  title?: string;
   subtitle?: string;
+  variant?: string;
   richText?: unknown[];
   content?: unknown[];
-  settings?: Record<string, unknown>;
+  settings?: SanitySectionSettings;
+  /* Shared / optional per-section fields */
+  layout?: string;
+  limit?: number;
+  columns?: number;
+  itemsPerRow?: number;
+  alignment?: string;
+  height?: string;
+  maxWidth?: string;
+  image?: SanityImage;
+  backgroundImage?: SanityImage;
+  foregroundImage?: SanityImage;
+  images?: SanityImage[];
+  primaryButton?: SanityButton;
+  secondaryButton?: SanityButton;
+  cta?: SanityButton;
+  buttons?: SanityButton[];
+  cards?: SanityCardItem[];
+  logos?: SanityLogoItem[];
+  stats?: SanityStatItem[];
+  items?: SanityFaqItem[];
+  embed?: SanityEmbed;
+  emailPlaceholder?: string;
+  successMessage?: string;
+  privacyText?: unknown[];
+  buttonLabel?: string;
+  showPlayOverlay?: boolean;
+  lightboxEnabled?: boolean;
+  books?: ReferencedBook[];
+  posts?: ReferencedPost[];
+  episodes?: ReferencedEpisode[];
+  videos?: ReferencedVideo[];
+};
+
+export type ReferencedPost = {
+  _id?: string;
+  _key?: string;
+  title?: string;
+  excerpt?: string;
+  publishedAt?: string;
+  slug?: SanitySlug;
+  mainImage?: SanityImage;
+};
+
+export type ReferencedEpisode = {
+  _id?: string;
+  _key?: string;
+  name?: string;
+  title?: string;
+  summary?: string;
+  episodeNumber?: number;
+  publishedAt?: string;
+  slug?: SanitySlug;
+  coverImage?: SanityImage;
+};
+
+export type ReferencedVideo = {
+  _id?: string;
+  _key?: string;
+  title?: string;
+  description?: string;
+  youtubeUrl?: string;
+  publishedAt?: string;
+  slug?: SanitySlug;
+  thumbnail?: SanityImage;
+};
+
+export type ReferencedBook = {
+  _id?: string;
+  _key?: string;
+  title?: string;
+  description?: unknown[];
+  slug?: SanitySlug;
+  order?: number;
+  coverImage?: SanityImage;
+  buyLinks?: Array<{ _key?: string; label?: string; url?: string }>;
 };
 
 export type SanityPage = {
   _id: string;
   title: string;
   slug: SanitySlug;
+  status?: 'draft' | 'published';
   seo?: SanitySeo;
   sections?: SanitySection[];
+};
+
+export type SanityArchivePageSettings = {
+  archiveType: 'blog' | 'podcast' | 'videos' | 'books';
+  eyebrow?: string;
+  title?: string;
+  introduction?: string;
+  emptyState?: string;
+  ordering?: 'publishedAtDesc' | 'publishedAtAsc' | 'titleAsc' | 'manual';
+  itemsPerPage?: number;
+  seo?: SanitySeo;
+};
+
+export type SanityRedirect = {
+  sourcePath: string;
+  destinationUrl?: string;
+  destinationInternal?: { _type?: string; slug?: SanitySlug };
+  statusCode?: 301 | 302 | 307 | 308 | 410;
+  enabled?: boolean;
+  expiresAt?: string;
+  notes?: string;
 };

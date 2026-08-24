@@ -18,8 +18,6 @@ import {
 } from '@/sanity/queries';
 import type { SanityImage, SanitySeo } from '@/sanity/types';
 
-export const dynamicParams = false;
-
 type Book = {
   title?: string;
   slug?: { current?: string };
@@ -76,7 +74,6 @@ export default async function BookPage({ params }: BookPageProps) {
       <main className="flex-1 px-[18px] pb-20 pt-[170px]">
         <article className="mx-auto max-w-[1200px]">
           <ContentHero
-            eyebrow="Book"
             title={book.title}
             image={book.coverImage}
           />

@@ -17,10 +17,7 @@ export async function generateMetadata(): Promise<Metadata> {
     : null;
   const seo = settings?.defaultSeo;
   return {
-    title:
-      seo?.metaTitle ||
-      settings?.siteTitle ||
-      'Saeed Souzangar - Official Website',
+    title: seo?.metaTitle || settings?.siteTitle,
     description: seo?.metaDescription,
     alternates: seo?.canonicalUrl ? { canonical: seo.canonicalUrl } : undefined,
     robots: seo?.noIndex ? { index: false, follow: false } : undefined,
@@ -38,23 +35,18 @@ export async function generateMetadata(): Promise<Metadata> {
           ]
         : undefined,
     },
-    icons: {
-      icon: [
-        { url: '/seo/favicon-0.png', sizes: '32x32' },
-        { url: '/seo/favicon-1.png', sizes: '192x192' },
-      ],
-      apple: '/seo/favicon-2.png',
-    },
+    icons: settings?.favicon?.url ? { icon: [{ url: settings.favicon.url }], apple: settings.appleTouchIcon?.url } : undefined,
   };
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const settings = hasValidSanityConfig ? await getSiteSettings() as SanitySiteSettings | null : null;
   return (
-    <html lang="en" className={`${dmSans.variable} h-full antialiased`}>
+    <html lang={settings?.defaultLanguage || 'en'} dir={settings?.direction || 'ltr'} className={`${dmSans.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col font-sans">{children}</body>
     </html>
   );

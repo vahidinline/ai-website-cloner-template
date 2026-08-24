@@ -95,9 +95,11 @@ function download(url: string, dest: string): Promise<void> {
           resolve();
         });
       })
-      .on('error', (err) => {
-        fs.unlink(dest, () => {});
-        reject(err);
+      .on('error', (error) => {
+        fs.unlink(dest, () => {
+          // Ignore unlink failures; the original download error is re-raised.
+        });
+        reject(error);
       });
   });
 }
@@ -108,7 +110,7 @@ function getFilename(url: string, index: number): string {
     const basename = path.basename(parsed.pathname);
     if (!basename) return `image-${index}.jpg`;
     return basename;
-  } catch (e) {
+  } catch {
     return `image-${index}.jpg`;
   }
 }
@@ -132,7 +134,7 @@ async function run() {
     try {
       await download(url, dest);
       console.log(`Downloaded ${filename}`);
-    } catch (e) {
+    } catch {
       console.error(`Failed to download ${url}`);
     }
   }
@@ -145,7 +147,7 @@ async function run() {
     try {
       await download(url, dest);
       console.log(`Downloaded favicon-${i}.png`);
-    } catch (e) {
+    } catch {
       console.error(`Failed to download ${url}`);
     }
   }

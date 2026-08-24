@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "module": "commonjs",
+    "moduleResolution": "node10",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "declaration": false,
+    "noEmit": false,
+    "outDir": ".test-build",
+    "rootDir": ".",
+    "incremental": false
+  },
+  "include": [
+    "src/lib/redirect-validation.ts",
+    "src/lib/redirect-validation.test.ts",
+    "src/sanity/urls.ts",
+    "src/sanity/types.ts",
+    "src/sanity/urls.test.ts",
+    "src/app/api/revalidate/tags.ts",
+    "src/app/api/revalidate/tags.test.ts",
+    "src/app/robots-rules.ts",
+    "src/app/robots.test.ts",
+    "src/app/sitemap-entries.ts",
+    "src/app/sitemap-entries.test.ts"
+  ]
+}

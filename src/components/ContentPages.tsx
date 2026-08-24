@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { SanityImage } from '@/components/SanityImage';
 import { PortableTextRenderer } from '@/components/portable-text/PortableTextRenderer';
-import type { SanityImage } from '@/sanity/types';
+import type { SanityImage as SanityImageType } from '@/sanity/types';
 
 export type ContentCardItem = {
   _id: string;
@@ -11,7 +12,7 @@ export type ContentCardItem = {
   excerpt?: string;
   summary?: string;
   publishedAt?: string;
-  image?: SanityImage;
+  image?: SanityImageType;
   eyebrow?: string;
 };
 
@@ -24,6 +25,7 @@ export type BuyLink = {
 type ContentArchivePageProps = {
   eyebrow: string;
   title: string;
+  introduction?: string;
   items: ContentCardItem[];
   basePath: string;
   emptyMessage: string;
@@ -34,12 +36,13 @@ type ContentHeroProps = {
   title?: string;
   description?: string;
   publishedAt?: string;
-  image?: SanityImage;
+  image?: SanityImageType;
 };
 
 export function ContentArchivePage({
   eyebrow,
   title,
+  introduction,
   items,
   basePath,
   emptyMessage,
@@ -53,6 +56,7 @@ export function ContentArchivePage({
         <h1 className="mt-3 text-[56px] font-bold leading-none tracking-[-2px] text-[#001523] md:text-[88px]">
           {title}
         </h1>
+        {introduction ? <p className="mt-6 max-w-3xl text-xl leading-8 text-[#66737b]">{introduction}</p> : null}
         {items.length > 0 ? (
           <div className="mt-12 grid gap-6 md:grid-cols-3">
             {items.map((item) => (
@@ -60,10 +64,11 @@ export function ContentArchivePage({
                 key={item._id}
                 className="overflow-hidden rounded-[30px] bg-white shadow-sm">
                 {item.image?.url ? (
-                  <img
-                    src={item.image.url}
+                  <SanityImage
+                    image={item.image}
                     alt={item.image.alt || item.title || ''}
                     className="aspect-[1.35/1] w-full object-cover"
+                    sizes="(min-width: 768px) 33vw, 100vw"
                   />
                 ) : null}
                 <div className="p-8">
@@ -73,9 +78,7 @@ export function ContentArchivePage({
                     </p>
                   ) : null}
                   <h2 className="text-[28px] font-bold leading-tight tracking-[-0.7px] text-[#001523]">
-                    <Link href={`${basePath}/${item.slug?.current || '#'}`}>
-                      {item.title}
-                    </Link>
+                    {item.slug?.current ? <Link href={`${basePath}/${item.slug.current}`}>{item.title}</Link> : item.title}
                   </h2>
                   {item.summary || item.description || item.excerpt ? (
                     <p className="mt-4 text-[#66737b]">
@@ -119,8 +122,8 @@ export function ContentHero({
         ) : null}
       </div>
       {image?.url ? (
-        <img
-          src={image.url}
+        <SanityImage
+          image={image}
           alt={image.alt || title || ''}
           className="w-full rounded-[34px] object-cover shadow-sm"
         />

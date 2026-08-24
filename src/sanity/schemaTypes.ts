@@ -1,4 +1,5 @@
 import { defineArrayMember, defineField, defineType } from 'sanity';
+import { validateRedirectSource } from '../lib/redirect-validation';
 
 const alignmentOptions = [
   { title: 'Left', value: 'left' },
@@ -93,6 +94,48 @@ const button = defineType({
     }),
     defineField({ name: 'icon', title: 'Icon name', type: 'string' }),
   ],
+});
+
+const navigationItem = defineType({
+  name: 'navigationItem',
+  title: 'Navigation item',
+  type: 'object',
+  fields: [
+    defineField({ name: 'label', title: 'Label', type: 'string', validation: (Rule) => Rule.required().error('A navigation label is required.') }),
+    defineField({ name: 'url', title: 'External URL', type: 'url', validation: (Rule) => Rule.custom((url, context) => {
+      const parent = context.parent as { internalLink?: unknown } | undefined;
+      const internalLink = parent?.internalLink;
+      if (!url && !internalLink) return 'Choose an internal page or enter an external URL.';
+      if (url && internalLink) return 'Use either an internal page or an external URL, not both.';
+      return true;
+    }) }),
+    defineField({ name: 'internalLink', title: 'Internal destination', type: 'reference', to: [{ type: 'page' }, { type: 'post' }, { type: 'podcastEpisode' }, { type: 'video' }, { type: 'book' }], validation: (Rule) => Rule.custom((internalLink, context) => {
+      const parent = context.parent as { url?: unknown } | undefined;
+      const url = parent?.url;
+      if (!internalLink && !url) return 'Choose an internal page or enter an external URL.';
+      if (internalLink && url) return 'Use either an internal page or an external URL, not both.';
+      return true;
+    }) }),
+    defineField({ name: 'openInNewTab', title: 'Open in new tab', type: 'boolean', initialValue: false }),
+  ],
+  preview: {
+    select: { title: 'label', external: 'url', internal: 'internalLink.slug.current' },
+    prepare: ({ title, external, internal }) => ({ title, subtitle: external || (internal ? `/${internal}` : 'No destination selected') }),
+  },
+});
+
+const navigationMenu = defineType({
+  name: 'navigationMenu',
+  title: 'Navigation menu',
+  type: 'document',
+  fields: [
+    defineField({ name: 'title', title: 'Menu name', description: 'For editors only; this is not shown on the website.', type: 'string', validation: (Rule) => Rule.required() }),
+    defineField({ name: 'items', title: 'Menu items', type: 'array', of: [defineArrayMember({ type: 'navigationItem' })], validation: (Rule) => Rule.min(1) }),
+  ],
+  preview: {
+    select: { title: 'title', items: 'items' },
+    prepare: ({ title, items }) => ({ title, subtitle: `${items?.length ?? 0} item${items?.length === 1 ? '' : 's'}` }),
+  },
 });
 
 const imageWithAlt = defineType({
@@ -481,6 +524,20 @@ const heroSection = defineType({
       initialValue: 'split',
     }),
     ...sectionBaseFields(),
+    defineField({
+      name: 'headingLevel',
+      title: 'Title heading level',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'H1', value: 'h1' },
+          { title: 'H2', value: 'h2' },
+          { title: 'H3', value: 'h3' },
+        ],
+        layout: 'radio',
+      },
+      initialValue: 'h1',
+    }),
     defineField({ name: 'richText', title: 'Rich text', type: 'richText' }),
     defineField({
       name: 'primaryButton',
@@ -1029,6 +1086,7 @@ const podcastEpisode = defineType({
     }),
     defineField({ name: 'summary', title: 'Summary', type: 'text', rows: 4 }),
     defineField({ name: 'body', title: 'Show notes / Body', type: 'richText' }),
+    defineField({ name: 'transcriptTitle', title: 'Transcript heading', type: 'string' }),
     defineField({ name: 'transcript', title: 'Transcript', type: 'richText' }),
     defineField({ name: 'audioUrl', title: 'Audio URL', type: 'url' }),
     defineField({
@@ -1124,13 +1182,15 @@ const page = defineType({
   title: 'Page',
   type: 'document',
   fields: [
-    defineField({ name: 'title', title: 'Title', type: 'string' }),
+    defineField({ name: 'title', title: 'Title', type: 'string', validation: (Rule) => Rule.required() }),
     defineField({
       name: 'slug',
       title: 'Slug',
       type: 'slug',
       options: { source: 'title' },
+      validation: (Rule) => Rule.required(),
     }),
+    defineField({ name: 'status', title: 'Status', type: 'string', options: { list: ['draft', 'published'] }, initialValue: 'published' }),
     defineField({ name: 'seo', title: 'SEO', type: 'seo' }),
     defineField({
       name: 'sections',
@@ -1157,13 +1217,76 @@ const page = defineType({
   ],
 });
 
+const archivePageSettings = defineType({
+  name: 'archivePageSettings', title: 'Archive page settings', type: 'document',
+  fields: [
+    defineField({ name: 'archiveType', title: 'Archive', type: 'string', options: { list: [
+      { title: 'Blog', value: 'blog' }, { title: 'Podcast', value: 'podcast' }, { title: 'Videos', value: 'videos' }, { title: 'Books', value: 'books' },
+    ] }, validation: (Rule) => Rule.required() }),
+    defineField({ name: 'eyebrow', title: 'Eyebrow', type: 'string' }),
+    defineField({ name: 'title', title: 'Title', type: 'string', validation: (Rule) => Rule.required() }),
+    defineField({ name: 'introduction', title: 'Introduction', type: 'text', rows: 3 }),
+    defineField({ name: 'emptyState', title: 'Empty state', type: 'string', validation: (Rule) => Rule.required() }),
+    defineField({ name: 'ordering', title: 'Ordering', type: 'string', options: { list: ['publishedAtDesc', 'publishedAtAsc', 'titleAsc', 'manual'] }, initialValue: 'publishedAtDesc' }),
+    defineField({ name: 'itemsPerPage', title: 'Items per page', type: 'number', validation: (Rule) => Rule.min(1).max(100), initialValue: 12 }),
+    defineField({ name: 'seo', title: 'SEO', type: 'seo' }),
+  ],
+});
+
+const redirect = defineType({
+  name: 'redirect', title: 'Redirect', type: 'document',
+  fields: [
+    defineField({
+      name: 'sourcePath', title: 'Source path', type: 'string',
+      description: 'Must start with a single /, e.g. /old-page. A pasted query string or fragment is ignored when matching.',
+      validation: (Rule) => Rule.required().custom((value) => {
+        const result = validateRedirectSource(String(value ?? ''));
+        return result.ok ? true : result.message;
+      }),
+    }),
+    defineField({ name: 'destinationUrl', title: 'External destination', type: 'url', hidden: ({ parent }) => parent?.statusCode === 410 }),
+    defineField({ name: 'destinationInternal', title: 'Internal destination', type: 'reference', to: [{ type: 'page' }, { type: 'post' }, { type: 'podcastEpisode' }, { type: 'video' }, { type: 'book' }], hidden: ({ parent }) => parent?.statusCode === 410 }),
+    defineField({
+      name: 'statusCode', title: 'Status code', type: 'number', options: { list: [
+        { title: '301 — Permanent redirect', value: 301 },
+        { title: '302 — Temporary redirect', value: 302 },
+        { title: '307 — Temporary redirect (method preserved)', value: 307 },
+        { title: '308 — Permanent redirect (method preserved)', value: 308 },
+        { title: '410 — Page removed (Gone)', value: 410 },
+      ] }, initialValue: 301,
+      // The select list is the Studio-side constraint. `Rule.valid()` is not
+      // reliable for numeric option values in the installed Sanity version.
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({ name: 'enabled', title: 'Enabled', type: 'boolean', initialValue: true }),
+    defineField({ name: 'expiresAt', title: 'Expiry', type: 'datetime' }),
+    defineField({ name: 'notes', title: 'Notes', type: 'text', rows: 3 }),
+  ],
+  preview: {
+    select: { source: 'sourcePath', external: 'destinationUrl', internal: 'destinationInternal', status: 'statusCode', enabled: 'enabled' },
+    prepare: ({ source, external, internal, status, enabled }) => ({
+      title: `${enabled === false ? '[disabled] ' : ''}${source}`,
+      subtitle: `${status || 301} → ${external || internal?.slug?.current || '(no destination)'}`,
+    }),
+  },
+});
+
 const siteSettings = defineType({
   name: 'siteSettings',
   title: 'Site settings',
   type: 'document',
   fields: [
-    defineField({ name: 'siteTitle', title: 'Site title', type: 'string' }),
+    defineField({ name: 'siteTitle', title: 'Site name', type: 'string', group: 'identity', validation: (Rule) => Rule.required() }),
+    defineField({ name: 'siteUrl', title: 'Site URL', type: 'url', group: 'identity' }),
+    defineField({ name: 'defaultLanguage', title: 'Default language', type: 'string', group: 'identity', initialValue: 'en' }),
+    defineField({ name: 'direction', title: 'Text direction', type: 'string', group: 'identity', options: { list: ['ltr', 'rtl'] }, initialValue: 'ltr' }),
     defineField({ name: 'footer', title: 'Footer', type: 'footerSettings' }),
+    defineField({ name: 'header', title: 'Header', type: 'object', group: 'header', fields: [
+      defineField({ name: 'enabled', title: 'Show header', type: 'boolean', initialValue: true }),
+      defineField({ name: 'navigationMenu', title: 'Navigation menu', type: 'reference', to: [{ type: 'navigationMenu' }] }),
+      defineField({ name: 'searchLabel', title: 'Search button label', type: 'string' }),
+      defineField({ name: 'action', title: 'Header action', type: 'button' }),
+    ] }),
     defineField({
       name: 'logoLight',
       title: 'Logo light',
@@ -1202,12 +1325,22 @@ const siteSettings = defineType({
     }),
     defineField({ name: 'footerCta', title: 'Footer CTA', type: 'ctaSection' }),
     defineField({ name: 'defaultSeo', title: 'Default SEO', type: 'seo' }),
+    defineField({ name: 'favicon', title: 'Favicon', type: 'imageWithAlt', group: 'icons' }),
+    defineField({ name: 'appleTouchIcon', title: 'Apple touch icon', type: 'imageWithAlt', group: 'icons' }),
+    defineField({ name: 'androidIcons', title: 'Android icons', type: 'array', of: [defineArrayMember({ type: 'imageWithAlt' })], group: 'icons' }),
+    defineField({ name: 'themeColor', title: 'Theme color', type: 'string', group: 'icons' }),
+    defineField({ name: 'manifestName', title: 'Manifest name', type: 'string', group: 'icons' }),
+    defineField({ name: 'robots', title: 'Robots', type: 'object', group: 'seo', fields: [defineField({ name: 'allowIndexing', title: 'Allow indexing', type: 'boolean', initialValue: true }), defineField({ name: 'disallowPaths', title: 'Disallow paths', type: 'array', of: [defineArrayMember({ type: 'string' })] }), defineField({ name: 'sitemapEnabled', title: 'Include sitemap', type: 'boolean', initialValue: true })] }),
+    defineField({ name: 'structuredData', title: 'Structured data', type: 'object', group: 'structuredData', fields: [defineField({ name: 'type', title: 'Type', type: 'string', options: { list: ['Person', 'Organization'] } }), defineField({ name: 'name', title: 'Name', type: 'string' }), defineField({ name: 'url', title: 'URL', type: 'url' }), defineField({ name: 'description', title: 'Description', type: 'text' }), defineField({ name: 'image', title: 'Image', type: 'imageWithAlt' }), defineField({ name: 'sameAs', title: 'Profiles', type: 'array', of: [defineArrayMember({ type: 'url' })] })] }),
   ],
+  groups: [{ name: 'identity', title: 'Identity' }, { name: 'header', title: 'Header & navigation' }, { name: 'seo', title: 'SEO' }, { name: 'icons', title: 'Icons & manifest' }, { name: 'structuredData', title: 'Structured data' }],
 });
 
 export const schemaTypes = [
   seo,
   button,
+  navigationItem,
+  navigationMenu,
   imageWithAlt,
   typographySettings,
   sectionSettings,
@@ -1243,5 +1376,7 @@ export const schemaTypes = [
   video,
   book,
   page,
+  archivePageSettings,
+  redirect,
   siteSettings,
 ];
