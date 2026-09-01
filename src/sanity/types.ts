@@ -48,11 +48,16 @@ export type SanitySiteSettings = {
   robots?: { allowIndexing?: boolean; disallowPaths?: string[]; sitemapEnabled?: boolean };
   structuredData?: {
     type?: string;
+    id?: string;
     name?: string;
+    alternateName?: string[];
     url?: string;
     description?: string;
+    jobTitle?: string;
     image?: SanityImage;
     sameAs?: string[];
+    subjectOf?: Array<{ type?: string; headline?: string; url?: string }>;
+    organizations?: Array<{ name?: string; url?: string; sameAs?: string[] }>;
   };
   header?: { enabled?: boolean; navigationMenu?: SanityNavigationMenu; searchLabel?: string; action?: SanityButton };
   logoLight?: SanityImage;
@@ -79,6 +84,8 @@ export type SanitySeo = {
   metaDescription?: string;
   ogImage?: SanityImage;
   canonicalUrl?: string;
+  languageAlternates?: Array<{ language?: string; url?: string }>;
+  isProfilePage?: boolean;
   noIndex?: boolean;
 };
 

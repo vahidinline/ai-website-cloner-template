@@ -7,10 +7,13 @@ import { hasValidSanityConfig } from '@/sanity/env';
 import {
   allVideoSlugsQuery,
   getVideoBySlug,
+  getSiteSettings,
   sanityClient,
 } from '@/sanity/queries';
 import type { SanityImage, SanitySeo } from '@/sanity/types';
 import { embedYouTubeUrl } from '@/sanity/urls';
+import { buildAlternates } from '@/lib/seo';
+import type { SanitySiteSettings } from '@/sanity/types';
 
 type Video = {
   title?: string;
@@ -40,13 +43,14 @@ export async function generateMetadata({
   params,
 }: VideoPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const video = hasValidSanityConfig
-    ? ((await getVideoBySlug(slug)) as Video | null)
-    : null;
+  const [video, settings] = hasValidSanityConfig
+    ? await Promise.all([getVideoBySlug(slug) as Promise<Video | null>, getSiteSettings() as Promise<SanitySiteSettings | null>])
+    : [null, null];
 
   return {
     title: video?.seo?.metaTitle || video?.title,
     description: video?.seo?.metaDescription || video?.description,
+    alternates: buildAlternates(video?.seo, settings?.siteUrl, `/videos/${slug}`),
     robots: video?.seo?.noIndex ? { index: false, follow: false } : undefined,
     openGraph: video?.thumbnail?.url
       ? { images: [{ url: video.thumbnail.url, alt: video.thumbnail.alt }] }

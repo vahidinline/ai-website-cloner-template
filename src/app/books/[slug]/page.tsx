@@ -14,9 +14,12 @@ import { hasValidSanityConfig } from '@/sanity/env';
 import {
   allBookSlugsQuery,
   getBookBySlug,
+  getSiteSettings,
   sanityClient,
 } from '@/sanity/queries';
 import type { SanityImage, SanitySeo } from '@/sanity/types';
+import { buildAlternates } from '@/lib/seo';
+import type { SanitySiteSettings } from '@/sanity/types';
 
 type Book = {
   title?: string;
@@ -44,13 +47,14 @@ export async function generateMetadata({
   params,
 }: BookPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const book = hasValidSanityConfig
-    ? ((await getBookBySlug(slug)) as Book | null)
-    : null;
+  const [book, settings] = hasValidSanityConfig
+    ? await Promise.all([getBookBySlug(slug) as Promise<Book | null>, getSiteSettings() as Promise<SanitySiteSettings | null>])
+    : [null, null];
 
   return {
     title: book?.seo?.metaTitle || book?.title,
     description: book?.seo?.metaDescription,
+    alternates: buildAlternates(book?.seo, settings?.siteUrl, `/books/${slug}`),
     robots: book?.seo?.noIndex ? { index: false, follow: false } : undefined,
     openGraph: book?.coverImage?.url
       ? { images: [{ url: book.coverImage.url, alt: book.coverImage.alt }] }

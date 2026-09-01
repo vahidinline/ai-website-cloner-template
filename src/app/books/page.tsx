@@ -5,8 +5,9 @@ import {
 import { Footer } from '@/components/Footer';
 import { Header } from '@/components/Header';
 import { hasValidSanityConfig } from '@/sanity/env';
-import { getArchivePageSettings, getBooks } from '@/sanity/queries';
-import type { SanityArchivePageSettings, SanityImage } from '@/sanity/types';
+import { getArchivePageSettings, getBooks, getSiteSettings } from '@/sanity/queries';
+import type { SanityArchivePageSettings, SanityImage, SanitySiteSettings } from '@/sanity/types';
+import { buildAlternates } from '@/lib/seo';
 
 type BookListItem = {
   _id: string;
@@ -14,6 +15,11 @@ type BookListItem = {
   slug?: { current?: string };
   coverImage?: SanityImage;
 };
+
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = hasValidSanityConfig ? await getSiteSettings() as SanitySiteSettings | null : null;
+  return { alternates: buildAlternates(undefined, settings?.siteUrl, '/books') };
+}
 
 export default async function BooksIndexPage() {
   const [books, settings] = hasValidSanityConfig ? await Promise.all([getBooks() as Promise<BookListItem[]>, getArchivePageSettings('books') as Promise<SanityArchivePageSettings | null>]) : [[], null];
@@ -40,3 +46,4 @@ export default async function BooksIndexPage() {
     </div>
   );
 }
+import type { Metadata } from 'next';

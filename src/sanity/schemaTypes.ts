@@ -45,10 +45,84 @@ const seo = defineType({
     }),
     defineField({ name: 'canonicalUrl', title: 'Canonical URL', type: 'url' }),
     defineField({
+      name: 'languageAlternates',
+      title: 'Language alternates (hreflang)',
+      description: 'Add the matching page on the other language site. Each site must list the other site back.',
+      type: 'array',
+      of: [
+        defineArrayMember({
+          type: 'object',
+          fields: [
+            defineField({ name: 'language', title: 'Language code', type: 'string', description: 'For example: en or fa-IR', validation: (Rule) => Rule.required() }),
+            defineField({ name: 'url', title: 'Alternate page URL', type: 'url', validation: (Rule) => Rule.required() }),
+          ],
+          preview: { select: { title: 'language', subtitle: 'url' } },
+        }),
+      ],
+    }),
+    defineField({
+      name: 'isProfilePage',
+      title: 'This is the person profile page',
+      description: 'Enable only on the primary About page. It adds a ProfilePage connected to the site-wide Person entity.',
+      type: 'boolean',
+      initialValue: false,
+    }),
+    defineField({
       name: 'noIndex',
       title: 'No index',
       type: 'boolean',
       initialValue: false,
+    }),
+  ],
+});
+
+const structuredData = defineType({
+  name: 'structuredData',
+  title: 'Person structured data',
+  type: 'object',
+  fields: [
+    defineField({ name: 'type', title: 'Entity type', type: 'string', options: { list: ['Person', 'Organization'] }, initialValue: 'Person', validation: (Rule) => Rule.required() }),
+    defineField({ name: 'id', title: 'Stable entity ID (@id)', type: 'url', description: 'Use one identical, permanent URL on both language sites, for example https://souzangar.com/#person.', validation: (Rule) => Rule.required() }),
+    defineField({ name: 'name', title: 'Primary name', type: 'string', validation: (Rule) => Rule.required() }),
+    defineField({ name: 'alternateName', title: 'Alternate names', type: 'array', of: [defineArrayMember({ type: 'string' })], description: 'For example: سعید سوزنگر.' }),
+    defineField({ name: 'url', title: 'Primary website URL', type: 'url', validation: (Rule) => Rule.required() }),
+    defineField({ name: 'description', title: 'Description', type: 'text', rows: 3 }),
+    defineField({ name: 'jobTitle', title: 'Professional title', type: 'string' }),
+    defineField({ name: 'image', title: 'Portrait image', type: 'imageWithAlt', description: 'Published as an ImageObject, including image dimensions when available.' }),
+    defineField({ name: 'sameAs', title: 'Verified profiles (sameAs)', type: 'array', of: [defineArrayMember({ type: 'url' })], description: 'Add only profiles that belong to this exact person.' }),
+    defineField({
+      name: 'subjectOf',
+      title: 'Independent coverage (subjectOf)',
+      type: 'array',
+      description: 'Use original reporting URLs, not summaries hosted on this site.',
+      of: [
+        defineArrayMember({
+          type: 'object',
+          fields: [
+            defineField({ name: 'type', title: 'Schema type', type: 'string', options: { list: ['NewsArticle', 'Article', 'PodcastEpisode', 'VideoObject'] }, initialValue: 'NewsArticle', validation: (Rule) => Rule.required() }),
+            defineField({ name: 'headline', title: 'Headline', type: 'string' }),
+            defineField({ name: 'url', title: 'Original source URL', type: 'url', validation: (Rule) => Rule.required() }),
+          ],
+          preview: { select: { title: 'headline', subtitle: 'url' } },
+        }),
+      ],
+    }),
+    defineField({
+      name: 'organizations',
+      title: 'Organizations and projects',
+      type: 'array',
+      description: 'Add only organizations or projects the person is genuinely affiliated with.',
+      of: [
+        defineArrayMember({
+          type: 'object',
+          fields: [
+            defineField({ name: 'name', title: 'Name', type: 'string', validation: (Rule) => Rule.required() }),
+            defineField({ name: 'url', title: 'Official URL', type: 'url' }),
+            defineField({ name: 'sameAs', title: 'Verified profile URLs', type: 'array', of: [defineArrayMember({ type: 'url' })] }),
+          ],
+          preview: { select: { title: 'name', subtitle: 'url' } },
+        }),
+      ],
     }),
   ],
 });
@@ -1352,13 +1426,14 @@ const siteSettings = defineType({
     defineField({ name: 'themeColor', title: 'Theme color', type: 'string', group: 'icons' }),
     defineField({ name: 'manifestName', title: 'Manifest name', type: 'string', group: 'icons' }),
     defineField({ name: 'robots', title: 'Robots', type: 'object', group: 'seo', fields: [defineField({ name: 'allowIndexing', title: 'Allow indexing', type: 'boolean', initialValue: true }), defineField({ name: 'disallowPaths', title: 'Disallow paths', type: 'array', of: [defineArrayMember({ type: 'string' })] }), defineField({ name: 'sitemapEnabled', title: 'Include sitemap', type: 'boolean', initialValue: true })] }),
-    defineField({ name: 'structuredData', title: 'Structured data', type: 'object', group: 'structuredData', fields: [defineField({ name: 'type', title: 'Type', type: 'string', options: { list: ['Person', 'Organization'] } }), defineField({ name: 'name', title: 'Name', type: 'string' }), defineField({ name: 'url', title: 'URL', type: 'url' }), defineField({ name: 'description', title: 'Description', type: 'text' }), defineField({ name: 'image', title: 'Image', type: 'imageWithAlt' }), defineField({ name: 'sameAs', title: 'Profiles', type: 'array', of: [defineArrayMember({ type: 'url' })] })] }),
+    defineField({ name: 'structuredData', title: 'Structured data', type: 'structuredData', group: 'structuredData' }),
   ],
   groups: [{ name: 'identity', title: 'Identity' }, { name: 'header', title: 'Header & navigation' }, { name: 'seo', title: 'SEO' }, { name: 'icons', title: 'Icons & manifest' }, { name: 'structuredData', title: 'Structured data' }],
 });
 
 export const schemaTypes = [
   seo,
+  structuredData,
   button,
   navigationItem,
   navigationMenu,

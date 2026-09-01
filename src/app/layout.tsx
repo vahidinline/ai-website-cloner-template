@@ -4,7 +4,6 @@ import './globals.css';
 import { getSiteSettings } from '@/sanity/queries';
 import { hasValidSanityConfig } from '@/sanity/env';
 import type { SanitySiteSettings } from '@/sanity/types';
-import { buildSiteJsonLd, serializeJsonLd } from '@/lib/structured-data';
 
 const dmSans = DM_Sans({
   variable: '--font-dm-sans',
@@ -20,7 +19,6 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: seo?.metaTitle || settings?.siteTitle,
     description: seo?.metaDescription,
-    alternates: seo?.canonicalUrl ? { canonical: seo.canonicalUrl } : undefined,
     robots: seo?.noIndex ? { index: false, follow: false } : undefined,
     openGraph: {
       title: seo?.metaTitle || settings?.siteTitle,
@@ -46,16 +44,9 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const settings = hasValidSanityConfig ? await getSiteSettings() as SanitySiteSettings | null : null;
-  const jsonLd = buildSiteJsonLd(settings?.structuredData);
   return (
     <html lang={settings?.defaultLanguage || 'en'} dir={settings?.direction || 'ltr'} className={`${dmSans.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col font-sans">
-        {jsonLd ? (
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
-          />
-        ) : null}
         {children}
       </body>
     </html>

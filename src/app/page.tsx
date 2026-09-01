@@ -5,6 +5,8 @@ import { SectionRenderer } from '@/components/SectionRenderer';
 import { hasValidSanityConfig } from '@/sanity/env';
 import { getHomePage, getSiteSettings } from '@/sanity/queries';
 import type { SanityPage, SanitySiteSettings } from '@/sanity/types';
+import { buildAlternates } from '@/lib/seo';
+import { buildSiteJsonLd, serializeJsonLd } from '@/lib/structured-data';
 
 async function getData() {
   if (!hasValidSanityConfig) return { page: null, settings: null };
@@ -13,12 +15,13 @@ async function getData() {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-  const { page } = await getData();
+  const { page, settings } = await getData();
   const seo = page?.seo;
-  return { title: seo?.metaTitle || page?.title, description: seo?.metaDescription, alternates: seo?.canonicalUrl ? { canonical: seo.canonicalUrl } : undefined, robots: seo?.noIndex ? { index: false, follow: false } : undefined };
+  return { title: seo?.metaTitle || page?.title, description: seo?.metaDescription, alternates: buildAlternates(seo, settings?.siteUrl, '/'), robots: seo?.noIndex ? { index: false, follow: false } : undefined };
 }
 
 export default async function HomePage() {
-  const { page } = await getData();
-  return <div className="flex min-h-screen flex-col bg-[#fbf9f9]"><Header /><main className="flex-1">{page?.sections?.length ? <SectionRenderer sections={page.sections} /> : null}</main><Footer /></div>;
+  const { page, settings } = await getData();
+  const jsonLd = page ? buildSiteJsonLd(settings?.structuredData, page.seo) : null;
+  return <div className="flex min-h-screen flex-col bg-[#fbf9f9]">{jsonLd ? <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }} /> : null}<Header /><main className="flex-1">{page?.sections?.length ? <SectionRenderer sections={page.sections} /> : null}</main><Footer /></div>;
 }

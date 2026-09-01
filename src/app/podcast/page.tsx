@@ -5,8 +5,9 @@ import {
   type ContentCardItem,
 } from '@/components/ContentPages';
 import { hasValidSanityConfig } from '@/sanity/env';
-import { getArchivePageSettings, getPodcastEpisodes } from '@/sanity/queries';
-import type { SanityArchivePageSettings, SanityImage } from '@/sanity/types';
+import { getArchivePageSettings, getPodcastEpisodes, getSiteSettings } from '@/sanity/queries';
+import type { SanityArchivePageSettings, SanityImage, SanitySiteSettings } from '@/sanity/types';
+import { buildAlternates } from '@/lib/seo';
 
 type PodcastEpisodeListItem = {
   _id: string;
@@ -17,6 +18,11 @@ type PodcastEpisodeListItem = {
   coverImage?: SanityImage;
   summary?: string;
 };
+
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = hasValidSanityConfig ? await getSiteSettings() as SanitySiteSettings | null : null;
+  return { alternates: buildAlternates(undefined, settings?.siteUrl, '/podcast') };
+}
 
 export default async function PodcastIndexPage() {
   const [episodes, settings] = hasValidSanityConfig ? await Promise.all([getPodcastEpisodes() as Promise<PodcastEpisodeListItem[]>, getArchivePageSettings('podcast') as Promise<SanityArchivePageSettings | null>]) : [[], null];
@@ -48,3 +54,4 @@ export default async function PodcastIndexPage() {
     </div>
   );
 }
+import type { Metadata } from 'next';

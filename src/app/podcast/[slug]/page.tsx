@@ -12,9 +12,12 @@ import { hasValidSanityConfig } from '@/sanity/env';
 import {
   allPodcastEpisodeSlugsQuery,
   getPodcastEpisodeBySlug,
+  getSiteSettings,
   sanityClient,
 } from '@/sanity/queries';
 import type { SanityImage, SanitySeo } from '@/sanity/types';
+import { buildAlternates } from '@/lib/seo';
+import type { SanitySiteSettings } from '@/sanity/types';
 
 type PodcastEpisode = {
   title?: string;
@@ -50,13 +53,14 @@ export async function generateMetadata({
   params,
 }: PodcastEpisodePageProps): Promise<Metadata> {
   const { slug } = await params;
-  const episode = hasValidSanityConfig
-    ? ((await getPodcastEpisodeBySlug(slug)) as PodcastEpisode | null)
-    : null;
+  const [episode, settings] = hasValidSanityConfig
+    ? await Promise.all([getPodcastEpisodeBySlug(slug) as Promise<PodcastEpisode | null>, getSiteSettings() as Promise<SanitySiteSettings | null>])
+    : [null, null];
 
   return {
     title: episode?.seo?.metaTitle || episode?.title,
     description: episode?.seo?.metaDescription || episode?.summary,
+    alternates: buildAlternates(episode?.seo, settings?.siteUrl, `/podcast/${slug}`),
     robots: episode?.seo?.noIndex ? { index: false, follow: false } : undefined,
     openGraph: episode?.coverImage?.url
       ? {

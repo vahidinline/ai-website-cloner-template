@@ -5,9 +5,12 @@ import { PortableTextRenderer } from '@/components/portable-text/PortableTextRen
 import {
   allPostSlugsQuery,
   getPostBySlug,
+  getSiteSettings,
   sanityClient,
 } from '@/sanity/queries';
 import { hasValidSanityConfig } from '@/sanity/env';
+import { buildAlternates } from '@/lib/seo';
+import type { SanitySiteSettings } from '@/sanity/types';
 
 type BlogPost = {
   title?: string;
@@ -27,6 +30,12 @@ export async function generateStaticParams() {
 
   const posts = await sanityClient.fetch<{ slug: string }[]>(allPostSlugsQuery);
   return posts.map((post: { slug: string }) => ({ slug: post.slug }));
+}
+
+export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const settings = hasValidSanityConfig ? await getSiteSettings() as SanitySiteSettings | null : null;
+  return { alternates: buildAlternates(undefined, settings?.siteUrl, `/blog/${slug}`) };
 }
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
@@ -68,3 +77,4 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     </div>
   );
 }
+import type { Metadata } from 'next';
