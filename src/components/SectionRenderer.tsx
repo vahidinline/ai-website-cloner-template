@@ -201,6 +201,7 @@ function DynamicCardsSection({ section, dark = false }: { section: SanitySection
           const name = typeof record.name === 'string' ? record.name : undefined;
           const description = (['description', 'excerpt', 'summary'] as const).map((key) => (typeof record[key] === 'string' ? (record[key] as string) : undefined)).find(Boolean);
           const slug = record.slug && typeof record.slug === 'object' && typeof (record.slug as { current?: unknown }).current === 'string' ? (record.slug as { current: string }).current : undefined;
+          const externalUrl = typeof record.externalUrl === 'string' && record.externalUrl ? record.externalUrl : undefined;
           const fallbackType = section._type === 'booksSection'
             ? 'book'
             : section._type === 'videoGridSection'
@@ -209,7 +210,7 @@ function DynamicCardsSection({ section, dark = false }: { section: SanitySection
                 ? 'podcastEpisode'
                 : 'post';
           const contentType = typeof record._type === 'string' ? record._type : fallbackType;
-          const href = slug ? resolveInternalUrl({ _type: contentType, slug: { current: slug } }) : undefined;
+          const href = externalUrl || (slug ? resolveInternalUrl({ _type: contentType, slug: { current: slug } }) : undefined);
           const key = typeof record._id === 'string' ? record._id : typeof record._key === 'string' ? record._key : `${title ?? name ?? 'item'}-${index}`;
           const card = (
             <>
@@ -234,7 +235,7 @@ function DynamicCardsSection({ section, dark = false }: { section: SanitySection
             <article
               key={key}
               className={`overflow-hidden rounded-[30px] ${dark ? 'bg-white/8 text-white' : 'bg-white text-[#001523]'} shadow-sm`}>
-              {href ? <Link href={href}>{card}</Link> : card}
+              {href ? externalUrl ? <a href={href} target="_blank" rel="noreferrer">{card}</a> : <Link href={href}>{card}</Link> : card}
             </article>
           );
         })}

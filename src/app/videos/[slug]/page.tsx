@@ -15,6 +15,8 @@ import { embedYouTubeUrl } from '@/sanity/urls';
 import { buildAlternates } from '@/lib/seo';
 import type { SanitySiteSettings } from '@/sanity/types';
 
+export const dynamic = 'force-dynamic';
+
 type Video = {
   title?: string;
   slug?: { current?: string };

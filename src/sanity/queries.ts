@@ -46,7 +46,7 @@ export const pageBySlugQuery = groq`*[_type == "page" && slug.current == $slug][
     cta ${buttonFields},
     buttons[] ${buttonFields},
     books[]->{..., coverImage ${imageFields}, buyLinks[]},
-    posts[]->{..., mainImage ${imageFields}, categories[]->{title, slug}},
+    posts[]->{..., externalUrl, mainImage ${imageFields}, categories[]->{title, slug}},
     episodes[]->{..., mainImage ${imageFields}, coverImage ${imageFields}, thumbnail ${imageFields}, guests[]->{name, slug, portrait ${imageFields}}},
     videos[]->{..., thumbnail ${imageFields}}
   }
@@ -66,6 +66,7 @@ export const postsQuery = groq`*[_type == "post"] | order(publishedAt desc){
   _id,
   title,
   slug,
+  externalUrl,
   excerpt,
   publishedAt,
   mainImage ${imageFields},

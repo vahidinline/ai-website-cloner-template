@@ -89,6 +89,13 @@ const structuredData = defineType({
     defineField({ name: 'description', title: 'Description', type: 'text', rows: 3 }),
     defineField({ name: 'jobTitle', title: 'Professional title', type: 'string' }),
     defineField({ name: 'image', title: 'Portrait image', type: 'imageWithAlt', description: 'Published as an ImageObject, including image dimensions when available.' }),
+    defineField({
+      name: 'profileImageUrl',
+      title: 'Self-hosted profile image URL',
+      type: 'url',
+      initialValue: 'https://souzangar.com/images/saeed.png',
+      description: 'Use a file served by this website, for example https://souzangar.com/images/saeed.png. This is used by Schema.org instead of the Sanity CDN image.',
+    }),
     defineField({ name: 'sameAs', title: 'Verified profiles (sameAs)', type: 'array', of: [defineArrayMember({ type: 'url' })], description: 'Add only profiles that belong to this exact person.' }),
     defineField({
       name: 'subjectOf',
@@ -1118,8 +1125,15 @@ const post = defineType({
     defineField({
       name: 'slug',
       title: 'Slug',
+      description: 'Used for an internal post page. Leave empty when this item only links to an external article.',
       type: 'slug',
       options: { source: 'title' },
+    }),
+    defineField({
+      name: 'externalUrl',
+      title: 'External article URL',
+      description: 'Optional. When set, blog cards link to this URL instead of the internal slug.',
+      type: 'url',
     }),
     defineField({ name: 'excerpt', title: 'Excerpt', type: 'text', rows: 3 }),
     defineField({

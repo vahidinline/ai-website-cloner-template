@@ -9,15 +9,16 @@ export function buildSiteJsonLd(
 ): JsonLd | null {
   if (!structuredData?.type || !structuredData.name || !structuredData.id || !structuredData.url) return null;
 
-  const image = structuredData.image?.url
+  const profileImageUrl = structuredData.profileImageUrl || structuredData.image?.url;
+  const image = profileImageUrl
     ? {
         '@type': 'ImageObject',
         '@id': `${structuredData.id}#image`,
-        url: structuredData.image.url,
-        contentUrl: structuredData.image.url,
-        ...(structuredData.image.width ? { width: structuredData.image.width } : {}),
-        ...(structuredData.image.height ? { height: structuredData.image.height } : {}),
-        ...(structuredData.image.alt ? { caption: structuredData.image.alt } : {}),
+        url: profileImageUrl,
+        contentUrl: profileImageUrl,
+        ...(structuredData.image?.width ? { width: structuredData.image.width } : {}),
+        ...(structuredData.image?.height ? { height: structuredData.image.height } : {}),
+        ...(structuredData.image?.alt ? { caption: structuredData.image.alt } : {}),
       }
     : undefined;
   const organizations = (structuredData.organizations || [])

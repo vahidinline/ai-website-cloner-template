@@ -6,7 +6,9 @@ import { getArchivePageSettings, getPosts, getSiteSettings } from '@/sanity/quer
 import type { SanityArchivePageSettings, SanityImage, SanitySiteSettings } from '@/sanity/types';
 import { buildAlternates } from '@/lib/seo';
 
-type Post = { _id: string; title?: string; slug?: { current?: string }; excerpt?: string; publishedAt?: string; mainImage?: SanityImage };
+export const dynamic = 'force-dynamic';
+
+type Post = { _id: string; title?: string; slug?: { current?: string }; externalUrl?: string; excerpt?: string; publishedAt?: string; mainImage?: SanityImage };
 export async function generateMetadata(): Promise<Metadata> {
   const settings = hasValidSanityConfig ? await getSiteSettings() as SanitySiteSettings | null : null;
   return { alternates: buildAlternates(undefined, settings?.siteUrl, '/blog') };

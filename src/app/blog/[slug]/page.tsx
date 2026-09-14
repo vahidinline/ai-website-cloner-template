@@ -12,6 +12,8 @@ import { hasValidSanityConfig } from '@/sanity/env';
 import { buildAlternates } from '@/lib/seo';
 import type { SanitySiteSettings } from '@/sanity/types';
 
+export const dynamic = 'force-dynamic';
+
 type BlogPost = {
   title?: string;
   excerpt?: string;

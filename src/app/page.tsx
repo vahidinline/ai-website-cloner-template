@@ -8,6 +8,8 @@ import type { SanityPage, SanitySiteSettings } from '@/sanity/types';
 import { buildAlternates } from '@/lib/seo';
 import { buildSiteJsonLd, serializeJsonLd } from '@/lib/structured-data';
 
+export const dynamic = 'force-dynamic';
+
 async function getData() {
   if (!hasValidSanityConfig) return { page: null, settings: null };
   const [page, settings] = await Promise.all([getHomePage(), getSiteSettings()]);

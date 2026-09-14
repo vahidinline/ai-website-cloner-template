@@ -9,6 +9,8 @@ import { getArchivePageSettings, getVideos, getSiteSettings } from '@/sanity/que
 import type { SanityArchivePageSettings, SanityImage, SanitySiteSettings } from '@/sanity/types';
 import { buildAlternates } from '@/lib/seo';
 
+export const dynamic = 'force-dynamic';
+
 type VideoListItem = {
   _id: string;
   title?: string;

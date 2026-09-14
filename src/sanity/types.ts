@@ -55,6 +55,7 @@ export type SanitySiteSettings = {
     description?: string;
     jobTitle?: string;
     image?: SanityImage;
+    profileImageUrl?: string;
     sameAs?: string[];
     subjectOf?: Array<{ type?: string; headline?: string; url?: string }>;
     organizations?: Array<{ name?: string; url?: string; sameAs?: string[] }>;

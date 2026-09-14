@@ -8,6 +8,7 @@ export type ContentCardItem = {
   _id: string;
   title?: string;
   slug?: { current?: string };
+  externalUrl?: string;
   description?: string;
   excerpt?: string;
   summary?: string;
@@ -78,7 +79,11 @@ export function ContentArchivePage({
                     </p>
                   ) : null}
                   <h2 className="text-[28px] font-bold leading-tight tracking-[-0.7px] text-[#001523]">
-                    {item.slug?.current ? <Link href={`${basePath}/${item.slug.current}`}>{item.title}</Link> : item.title}
+                    {item.externalUrl ? (
+                      <a href={item.externalUrl} target="_blank" rel="noreferrer">{item.title}</a>
+                    ) : item.slug?.current ? (
+                      <Link href={`${basePath}/${item.slug.current}`}>{item.title}</Link>
+                    ) : item.title}
                   </h2>
                   {item.summary || item.description || item.excerpt ? (
                     <p className="mt-4 text-[#66737b]">

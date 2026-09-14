@@ -9,6 +9,8 @@ import { getArchivePageSettings, getPodcastEpisodes, getSiteSettings } from '@/s
 import type { SanityArchivePageSettings, SanityImage, SanitySiteSettings } from '@/sanity/types';
 import { buildAlternates } from '@/lib/seo';
 
+export const dynamic = 'force-dynamic';
+
 type PodcastEpisodeListItem = {
   _id: string;
   title?: string;

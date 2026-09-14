@@ -9,6 +9,8 @@ import { getArchivePageSettings, getBooks, getSiteSettings } from '@/sanity/quer
 import type { SanityArchivePageSettings, SanityImage, SanitySiteSettings } from '@/sanity/types';
 import { buildAlternates } from '@/lib/seo';
 
+export const dynamic = 'force-dynamic';
+
 type BookListItem = {
   _id: string;
   title?: string;

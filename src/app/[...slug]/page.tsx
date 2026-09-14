@@ -9,6 +9,8 @@ import type { SanityPage, SanitySiteSettings } from '@/sanity/types';
 import { buildAlternates } from '@/lib/seo';
 import { buildSiteJsonLd, serializeJsonLd } from '@/lib/structured-data';
 
+export const dynamic = 'force-dynamic';
+
 type Props = { params: Promise<{ slug: string[] }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
