@@ -76,6 +76,20 @@ const seo = defineType({
   ],
 });
 
+const referenceCoverage = defineType({
+  name: 'referenceCoverage',
+  title: 'Independent coverage',
+  type: 'object',
+  fields: [
+    defineField({ name: 'type', title: 'Schema type', type: 'string', options: { list: ['NewsArticle', 'Article', 'PodcastEpisode', 'VideoObject'] }, initialValue: 'NewsArticle', validation: (Rule) => Rule.required() }),
+    defineField({ name: 'headline', title: 'Headline', type: 'string' }),
+    defineField({ name: 'url', title: 'Original source URL', type: 'url', validation: (Rule) => Rule.required() }),
+    defineField({ name: 'publisherName', title: 'Publisher name', type: 'string' }),
+    defineField({ name: 'publisherUrl', title: 'Publisher URL', type: 'url' }),
+  ],
+  preview: { select: { title: 'headline', subtitle: 'url' } },
+});
+
 const structuredData = defineType({
   name: 'structuredData',
   title: 'Person structured data',
@@ -104,19 +118,7 @@ const structuredData = defineType({
       title: 'Independent coverage (subjectOf)',
       type: 'array',
       description: 'Use original reporting URLs, not summaries hosted on this site.',
-      of: [
-        defineArrayMember({
-          type: 'object',
-          fields: [
-            defineField({ name: 'type', title: 'Schema type', type: 'string', options: { list: ['NewsArticle', 'Article', 'PodcastEpisode', 'VideoObject'] }, initialValue: 'NewsArticle', validation: (Rule) => Rule.required() }),
-            defineField({ name: 'headline', title: 'Headline', type: 'string' }),
-            defineField({ name: 'url', title: 'Original source URL', type: 'url', validation: (Rule) => Rule.required() }),
-            defineField({ name: 'publisherName', title: 'Publisher name', type: 'string' }),
-            defineField({ name: 'publisherUrl', title: 'Publisher URL', type: 'url' }),
-          ],
-          preview: { select: { title: 'headline', subtitle: 'url' } },
-        }),
-      ],
+      of: [defineArrayMember({ type: 'referenceCoverage' })],
     }),
     defineField({
       name: 'organizations',
@@ -1451,6 +1453,7 @@ const siteSettings = defineType({
 
 export const schemaTypes = [
   seo,
+  referenceCoverage,
   structuredData,
   button,
   navigationItem,
