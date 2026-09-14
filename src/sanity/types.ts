@@ -51,13 +51,15 @@ export type SanitySiteSettings = {
     id?: string;
     name?: string;
     alternateName?: string[];
+    inLanguage?: string[];
     url?: string;
     description?: string;
-    jobTitle?: string;
+    jobTitle?: string[];
+    knowsAbout?: string[];
     image?: SanityImage;
     profileImageUrl?: string;
     sameAs?: string[];
-    subjectOf?: Array<{ type?: string; headline?: string; url?: string }>;
+    subjectOf?: Array<{ type?: string; headline?: string; url?: string; publisherName?: string; publisherUrl?: string }>;
     organizations?: Array<{ name?: string; url?: string; sameAs?: string[] }>;
   };
   header?: { enabled?: boolean; navigationMenu?: SanityNavigationMenu; searchLabel?: string; action?: SanityButton };

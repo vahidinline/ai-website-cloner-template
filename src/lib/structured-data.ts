@@ -35,6 +35,9 @@ export function buildSiteJsonLd(
       '@type': coverage.type || 'NewsArticle',
       url: coverage.url,
       ...(coverage.headline ? { headline: coverage.headline } : {}),
+      ...(coverage.publisherName
+        ? { publisher: { '@type': 'NewsMediaOrganization', name: coverage.publisherName, ...(coverage.publisherUrl ? { url: coverage.publisherUrl } : {}) } }
+        : {}),
     }));
 
   const person: JsonLd = {
@@ -43,8 +46,10 @@ export function buildSiteJsonLd(
     name: structuredData.name,
     url: structuredData.url,
     ...(structuredData.alternateName?.filter(Boolean).length ? { alternateName: structuredData.alternateName.filter(Boolean) } : {}),
+    ...(structuredData.inLanguage?.filter(Boolean).length ? { inLanguage: structuredData.inLanguage.filter(Boolean) } : {}),
     ...(structuredData.description ? { description: structuredData.description } : {}),
     ...(structuredData.jobTitle ? { jobTitle: structuredData.jobTitle } : {}),
+    ...(structuredData.knowsAbout?.filter(Boolean).length ? { knowsAbout: structuredData.knowsAbout.filter(Boolean) } : {}),
     ...(image ? { image } : {}),
     ...(structuredData.sameAs?.filter(Boolean).length ? { sameAs: structuredData.sameAs.filter(Boolean) } : {}),
     ...(subjectOf.length ? { subjectOf } : {}),
