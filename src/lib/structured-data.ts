@@ -46,7 +46,6 @@ export function buildSiteJsonLd(
     name: structuredData.name,
     url: structuredData.url,
     ...(structuredData.alternateName?.filter(Boolean).length ? { alternateName: structuredData.alternateName.filter(Boolean) } : {}),
-    ...(structuredData.inLanguage?.filter(Boolean).length ? { inLanguage: structuredData.inLanguage.filter(Boolean) } : {}),
     ...(structuredData.description ? { description: structuredData.description } : {}),
     ...(structuredData.jobTitle ? { jobTitle: structuredData.jobTitle } : {}),
     ...(structuredData.knowsAbout?.filter(Boolean).length ? { knowsAbout: structuredData.knowsAbout.filter(Boolean) } : {}),
@@ -61,7 +60,13 @@ export function buildSiteJsonLd(
     '@graph': [
       person,
       ...(page?.isProfilePage && page.canonicalUrl
-        ? [{ '@type': 'ProfilePage', '@id': `${page.canonicalUrl}#profile`, url: page.canonicalUrl, mainEntity: { '@id': structuredData.id } }]
+        ? [{
+            '@type': 'ProfilePage',
+            '@id': `${page.canonicalUrl}#profile`,
+            url: page.canonicalUrl,
+            ...(structuredData.inLanguage?.filter(Boolean).length ? { inLanguage: structuredData.inLanguage.filter(Boolean) } : {}),
+            mainEntity: { '@id': structuredData.id },
+          }]
         : []),
     ],
   };
